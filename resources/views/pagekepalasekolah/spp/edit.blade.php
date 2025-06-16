@@ -1,0 +1,130 @@
+@extends('template-admin.layout')
+
+@section('content')
+    <div class="page-wrapper">
+        <div class="page-content">
+            <!--breadcrumb-->
+            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                <div class="breadcrumb-title pe-3">Forms</div>
+                <div class="ps-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 p-0">
+                            <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">SPP Siswa</li>
+                            <li class="breadcrumb-item active" aria-current="page">Edit SPP</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <!--breadcrumb-->
+
+            <div class="row">
+                <div class="col-xl-7 mx-auto">
+                    <hr />
+                    <div class="card border-top border-0 border-4 border-primary">
+                        <div class="card-body p-5">
+                            <div class="card-title d-flex align-items-center">
+                                <div><i class="bx bx-edit me-1 font-22 text-primary"></i></div>
+                                <h5 class="mb-0 text-primary">Edit SPP</h5>
+                            </div>
+                            <hr>
+                            <form action="{{ route('spp.update', $spp->id) }}" method="POST" class="row g-3"
+                                enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
+                                <div class="col-md-12">
+                                    <label for="siswa_id" class="form-label">Nama Siswa</label>
+                                    <select class="form-control" id="siswa_id" name="siswa_id" required>
+                                        <option value="">Pilih Siswa</option>
+                                        @foreach ($siswa as $item)
+                                            <option value="{{ $item->id }}" {{ $spp->siswa_id == $item->id ? 'selected' : '' }}>{{ $item->nama_anak }}</option>
+                                        @endforeach
+                                    </select>
+                                    <small class="text-danger">
+                                        @foreach ($errors->get('siswa_id') as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </small>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="tanggal_bayar" class="form-label">Tanggal Bayar</label>
+                                    <input type="date" class="form-control" id="tanggal_bayar" name="tanggal_bayar"
+                                        value="{{ $spp->tanggal_bayar }}" required>
+                                    <small class="text-danger">
+                                        @foreach ($errors->get('tanggal_bayar') as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </small>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="bulan_bayar" class="form-label">Bulan Bayar</label>
+                                    <select class="form-control" id="bulan_bayar" name="bulan_bayar" required>
+                                        <option value="">Pilih Bulan Bayar</option>
+                                        <option value="Januari" {{ $spp->bulan_bayar == 'Januari' ? 'selected' : '' }}>Januari</option>
+                                        <option value="Februari" {{ $spp->bulan_bayar == 'Februari' ? 'selected' : '' }}>Februari</option>
+                                        <option value="Maret" {{ $spp->bulan_bayar == 'Maret' ? 'selected' : '' }}>Maret</option>
+                                        <option value="April" {{ $spp->bulan_bayar == 'April' ? 'selected' : '' }}>April</option>
+                                        <option value="Mei" {{ $spp->bulan_bayar == 'Mei' ? 'selected' : '' }}>Mei</option>
+                                        <option value="Juni" {{ $spp->bulan_bayar == 'Juni' ? 'selected' : '' }}>Juni</option>
+                                        <option value="Juli" {{ $spp->bulan_bayar == 'Juli' ? 'selected' : '' }}>Juli</option>
+                                        <option value="Agustus" {{ $spp->bulan_bayar == 'Agustus' ? 'selected' : '' }}>Agustus</option>
+                                        <option value="September" {{ $spp->bulan_bayar == 'September' ? 'selected' : '' }}>September</option>
+                                        <option value="Oktober" {{ $spp->bulan_bayar == 'Oktober' ? 'selected' : '' }}>Oktober</option>
+                                        <option value="November" {{ $spp->bulan_bayar == 'November' ? 'selected' : '' }}>November</option>
+                                        <option value="Desember" {{ $spp->bulan_bayar == 'Desember' ? 'selected' : '' }}>Desember</option>
+                                    </select>
+                                    <small class="text-danger">
+                                        @foreach ($errors->get('bulan_bayar') as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </small>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="jumlah_bayar" class="form-label">Jumlah Bayar</label>
+                                    <input type="text" class="form-control" id="jumlah_bayar" name="jumlah_bayar"
+                                        value="{{ $spp->jumlah_bayar }}" required>
+                                    <small class="text-danger">
+                                        @foreach ($errors->get('jumlah_bayar') as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </small>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="tahun_pelajaran_id" class="form-label">Tahun Pelajaran</label>
+                                    <select class="form-control" id="tahun_pelajaran_id" name="tahun_pelajaran_id" required>
+                                        <option value="">Pilih Tahun Pelajaran</option>
+                                        @foreach ($tahunPelajaran as $item)
+                                            <option value="{{ $item->id }}" {{ $spp->tahun_pelajaran_id == $item->id ? 'selected' : '' }}>{{ $item->tahun_pelajaran }}</option>
+                                        @endforeach
+                                    </select>
+                                    <small class="text-danger">
+                                        @foreach ($errors->get('tahun_pelajaran_id') as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </small>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="status_bayar" class="form-label">Status Bayar</label>
+                                    <select class="form-control" id="status_bayar" name="status_bayar" required>
+                                        <option value="">Pilih Status Bayar</option>
+                                        <option value="lunas" {{ $spp->status_bayar == 'lunas' ? 'selected' : '' }}>Lunas</option>
+                                        <option value="belum_lunas" {{ $spp->status_bayar == 'belum_lunas' ? 'selected' : '' }}>Belum Lunas</option>
+                                    </select>
+                                    <small class="text-danger">
+                                        @foreach ($errors->get('status_bayar') as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </small>
+                                </div>
+
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary px-5">Update dan Kirim Notifikasi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
