@@ -29,6 +29,7 @@ use App\Http\Controllers\wali_kelas\{
     HafalanTahfizController,
     OrangTuaWalidanSiswaController,
     SiswaController,
+    KenaikanKelasController,
 };
 
 use App\Http\Controllers\kepala_sekolah\{
@@ -88,12 +89,14 @@ Route::group(['middleware' => ['role:bendahara']], function () {
     Route::get('spp/kartu-pembayaran/{nama_anak}', [SppSiswaController::class, 'kartuSpp'])->name('spp.kartu-pembayaran');
     Route::get('spp/filter', [SppSiswaController::class, 'showpagefilter'])->name('spp.showpagefilter');
     Route::post('spp/filter', [SppSiswaController::class, 'filter'])->name('spp.filter');
+    Route::post('spp/kirim-pesan-belum-bayar', [SppSiswaController::class, 'kirimPesanBelumBayar'])->name('spp.kirim-pesan-belum-bayar');
 });
 
 Route::group(['middleware' => ['role:wali_kelas']], function () {
     Route::get('/dashboard-wali-kelas', [DashboardWaliKelasController::class, 'index'])->name('dashboard-wali-kelas');
     Route::resource('hafalan-tahfiz', HafalanTahfizController::class);
     Route::resource('orang-tua-wali-dan-siswa', OrangTuaWalidanSiswaController::class);
+    Route::post('/pindah-kelas-multiple', [KenaikanKelasController::class, 'pindahKelasMultiple'])->name('pindah-kelas-multiple');
 });
 
 Route::group(['middleware' => ['role:kepala_sekolah']], function () {

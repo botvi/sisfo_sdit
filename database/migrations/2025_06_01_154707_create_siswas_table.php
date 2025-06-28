@@ -15,9 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama_anak');
             $table->string('jenis_kelamin');
-            $table->string('nik_anak');
             $table->foreignId('master_kelas_id');
-            $table->string('nis')->nullable();
             $table->string('nisn')->nullable();
             $table->foreignId('orang_tua_wali_id');
             

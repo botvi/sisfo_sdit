@@ -15,5 +15,10 @@ class MasterKelas extends Model
     {
         return $this->belongsTo(WaliKelas::class);
     }
+
+    public function siswa()
+    {
+        return $this->hasMany(Siswa::class);
+    }
     
 }

@@ -20,17 +20,26 @@
             <hr/>
             <div class="card">
                 <div class="card-body">
-                        <a href="{{ route('orang-tua-wali-dan-siswa.create') }}" class="btn btn-primary mb-3">Tambah Data</a>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <a href="{{ route('orang-tua-wali-dan-siswa.create') }}" class="btn btn-primary">Tambah Data</a>
+                        <div class="d-flex gap-2">
+                            <button id="btnPindahKelas" class="btn btn-success" style="display: none;">
+                                <i class="bx bx-transfer"></i> Pindah Kelas
+                            </button>
+                           
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table id="example2" class="table table-striped table-bordered">
                             <thead>
                                 <tr>
+                                    <th width="50">
+                                        <input type="checkbox" id="selectAll" class="form-check-input">
+                                    </th>
                                     <th>No</th>
                                     <th>Nama Anak</th>
                                     <th>Jenis Kelamin</th>
-                                    <th>NIK Anak</th>
                                     <th>Kelas</th>
-                                    <th>NIS</th>
                                     <th>NISN</th>
                                     <th>Nama Ibu</th>
                                     <th>NIK Ibu</th>
@@ -43,18 +52,18 @@
                                     <th>Alamat Wali</th>
                                     <th>No. WA Wali</th>
                                     <th>Aksi</th>
-                                
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($siswa as $index => $data)
                                 <tr>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input siswa-checkbox" value="{{ $data->id }}">
+                                    </td>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $data->nama_anak }}</td>
                                     <td>{{ $data->jenis_kelamin }}</td>
-                                    <td>{{ $data->nik_anak }}</td>
-                                    <td>{{ $data->masterKelas->nama_kelas }}</td>
-                                    <td>{{ $data->nis }}</td>
+                                    <td>{{ $data->masterKelas->kelas }}</td>
                                     <td>{{ $data->nisn }}</td>
                                     <td>{{ $data->orangTuaWali->nama_ibu ?? '-' }}</td>
                                     <td>{{ $data->orangTuaWali->nik_ibu ?? '-' }}</td>
@@ -79,12 +88,13 @@
                             </tbody>
                             <tfoot>
                                 <tr>
+                                    <th width="50">
+                                        <input type="checkbox" id="selectAllFooter" class="form-check-input">
+                                    </th>
                                     <th>No</th>
                                     <th>Nama Anak</th>  
                                     <th>Jenis Kelamin</th>
-                                    <th>NIK Anak</th>
                                     <th>Kelas</th>
-                                    <th>NIS</th>
                                     <th>NISN</th>
                                     <th>Nama Ibu</th>
                                     <th>NIK Ibu</th>
@@ -101,6 +111,31 @@
                             </tfoot>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pindah Kelas -->
+    <div class="modal fade" id="modalPindahKelas" tabindex="-1" aria-labelledby="modalPindahKelasLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalPindahKelasLabel">Pindah Kelas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Pindahkan <span id="jumlahSiswaDipilih">0</span> siswa ke kelas:</p>
+                    <select id="kelasTujuan" class="form-select">
+                        <option value="">Pilih Kelas Tujuan</option>
+                        @foreach(\App\Models\MasterKelas::all() as $kelas)
+                        <option value="{{ $kelas->id }}">{{ $kelas->kelas }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="btnKonfirmasiPindah">Pindahkan</button>
                 </div>
             </div>
         </div>
@@ -130,6 +165,106 @@
                         }
                     });
                 });
+            });
+
+            // Fungsi untuk checkbox
+            const selectAll = document.getElementById('selectAll');
+            const selectAllFooter = document.getElementById('selectAllFooter');
+            const siswaCheckboxes = document.querySelectorAll('.siswa-checkbox');
+            const btnPindahKelas = document.getElementById('btnPindahKelas');
+            const btnSelectAll = document.getElementById('btnSelectAll');
+            const modalPindahKelas = new bootstrap.Modal(document.getElementById('modalPindahKelas'));
+            const jumlahSiswaDipilih = document.getElementById('jumlahSiswaDipilih');
+            const btnKonfirmasiPindah = document.getElementById('btnKonfirmasiPindah');
+
+            // Fungsi untuk update tombol pindah kelas
+            function updatePindahKelasButton() {
+                const checkedBoxes = document.querySelectorAll('.siswa-checkbox:checked');
+                if (checkedBoxes.length > 0) {
+                    btnPindahKelas.style.display = 'inline-block';
+                    btnPindahKelas.textContent = `Pindah Kelas (${checkedBoxes.length} siswa)`;
+                } else {
+                    btnPindahKelas.style.display = 'none';
+                }
+            }
+
+            // Event listener untuk checkbox individual
+            siswaCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updatePindahKelasButton();
+                    
+                    // Update select all checkbox
+                    const allChecked = document.querySelectorAll('.siswa-checkbox:checked').length === siswaCheckboxes.length;
+                    selectAll.checked = allChecked;
+                    selectAllFooter.checked = allChecked;
+                });
+            });
+
+            // Event listener untuk select all
+            function handleSelectAll(checkbox) {
+                siswaCheckboxes.forEach(cb => {
+                    cb.checked = checkbox.checked;
+                });
+                updatePindahKelasButton();
+            }
+
+            selectAll.addEventListener('change', function() {
+                handleSelectAll(this);
+                selectAllFooter.checked = this.checked;
+            });
+
+            selectAllFooter.addEventListener('change', function() {
+                handleSelectAll(this);
+                selectAll.checked = this.checked;
+            });
+
+            // Event listener untuk tombol pindah kelas
+            btnPindahKelas.addEventListener('click', function() {
+                const checkedBoxes = document.querySelectorAll('.siswa-checkbox:checked');
+                jumlahSiswaDipilih.textContent = checkedBoxes.length;
+                modalPindahKelas.show();
+            });
+
+            // Event listener untuk konfirmasi pindah kelas
+            btnKonfirmasiPindah.addEventListener('click', function() {
+                const kelasTujuan = document.getElementById('kelasTujuan').value;
+                const checkedBoxes = document.querySelectorAll('.siswa-checkbox:checked');
+                
+                if (!kelasTujuan) {
+                    Swal.fire('Error', 'Silakan pilih kelas tujuan', 'error');
+                    return;
+                }
+
+                const siswaIds = Array.from(checkedBoxes).map(cb => cb.value);
+
+                // Kirim request AJAX
+                fetch('{{ route("pindah-kelas-multiple") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        siswa_ids: siswaIds,
+                        master_kelas_id: kelasTujuan
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Sukses', data.message, 'success').then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'Terjadi kesalahan saat memindahkan siswa', 'error');
+                });
+
+                modalPindahKelas.hide();
             });
         });
     </script>

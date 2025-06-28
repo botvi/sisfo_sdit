@@ -21,6 +21,9 @@
             <div class="card">
                 <div class="card-body">
                         <a href="{{ route('spp.create') }}" class="btn btn-primary mb-3">Tambah Data</a>
+                        <button type="button" class="btn btn-warning mb-3" onclick="kirimPesanPengingatan()">
+                            <i class="bx bx-message-square-dots"></i> Kirim Pesan Pengingatan
+                        </button>
                     <div class="table-responsive">
                         <table id="example2" class="table table-striped table-bordered">
                             <thead>
@@ -103,5 +106,63 @@
                 });
             });
         });
+
+        function kirimPesanPengingatan() {
+            Swal.fire({
+                title: 'Kirim Pesan Pengingatan?',
+                text: "Pesan akan dikirim ke semua orang tua yang anaknya belum membayar SPP bulan kemarin",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ffc107',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Kirim!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Tampilkan loading
+                    Swal.fire({
+                        title: 'Mengirim Pesan...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Kirim request
+                    fetch('{{ route("spp.kirim-pesan-belum-bayar") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: data.message,
+                                icon: 'success'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: data.message || 'Terjadi kesalahan saat mengirim pesan',
+                                icon: 'error'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan saat mengirim pesan',
+                            icon: 'error'
+                        });
+                    });
+                }
+            });
+        }
     </script>
     @endsection

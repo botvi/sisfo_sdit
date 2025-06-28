@@ -42,7 +42,6 @@
                                     <th>No</th>
                                     <th>Nama Siswa</th>
                                     <th>Nisn</th>
-                                    <th>Nik</th>
                                     <th>Nama Orang Tua/Wali</th>
                                     <th>Alamat Orang Tua/Wali</th>
                                     <th>No HP Orang Tua/Wali</th>
@@ -54,7 +53,6 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $s->nama_anak }}</td>
                                         <td>{{ $s->nisn }}</td>
-                                        <td>{{ $s->nik_anak }}</td>
                                         <td>{{ $s->orangTuaWali->nama_ibu ?? $s->orangTuaWali->nama_ayah ?? $s->orangTuaWali->nama_wali }}</td>
                                         <td>{{ $s->orangTuaWali->alamat_ortu ?? $s->orangTuaWali->alamat_wali }}</td>
                                         <td>{{ $s->orangTuaWali->no_wa_ortu ?? $s->orangTuaWali->no_wa_wali }}</td>

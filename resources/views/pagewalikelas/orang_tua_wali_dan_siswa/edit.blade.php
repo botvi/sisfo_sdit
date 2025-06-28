@@ -177,15 +177,6 @@
                                             </small>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="nik_anak" class="form-label">NIK Siswa</label>
-                                            <input type="number" minlength="16" maxlength="16" class="form-control" id="nik_anak" name="nik_anak" value="{{ old('nik_anak', $data->nik_anak) }}" required>
-                                            <small class="text-danger">
-                                                @foreach ($errors->get('nik_anak') as $error)
-                                                    <li>{{ $error }}</li>
-                                                @endforeach
-                                            </small>
-                                        </div>
-                                        <div class="col-md-6">
                                             <label for="master_kelas_id" class="form-label">Kelas</label>
                                             <select class="form-select" id="master_kelas_id" name="master_kelas_id" required>
                                                 <option value="">Pilih Kelas</option>
@@ -195,15 +186,6 @@
                                             </select>
                                             <small class="text-danger">
                                                 @foreach ($errors->get('master_kelas_id') as $error)
-                                                    <li>{{ $error }}</li>
-                                                @endforeach
-                                            </small>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="nis" class="form-label">NIS</label>
-                                            <input type="number" minlength="10" maxlength="10" class="form-control" id="nis" name="nis" value="{{ old('nis', $data->nis) }}" required>
-                                            <small class="text-danger">
-                                                @foreach ($errors->get('nis') as $error)
                                                     <li>{{ $error }}</li>
                                                 @endforeach
                                             </small>

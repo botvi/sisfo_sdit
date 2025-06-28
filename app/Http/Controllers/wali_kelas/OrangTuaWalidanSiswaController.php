@@ -18,11 +18,22 @@ class OrangTuaWalidanSiswaController extends Controller
         // Mendapatkan wali kelas berdasarkan user yang login
         $waliKelas = WaliKelas::where('user_id', Auth::id())->first();
         
+        if (!$waliKelas) {
+            Alert::error('Error', 'Data wali kelas tidak ditemukan');
+            return redirect()->back();
+        }
+        
+        // Mendapatkan master kelas yang diampu oleh wali kelas tersebut
+        $masterKelas = MasterKelas::where('wali_kelas_id', $waliKelas->id)->get();
+        
+        if ($masterKelas->isEmpty()) {
+            Alert::warning('Peringatan', 'Tidak ada kelas yang diampu');
+            return view('pagewalikelas.orang_tua_wali_dan_siswa.index', compact('siswa'));
+        }
+        
         // Mendapatkan siswa yang berada di kelas yang diampu oleh wali kelas tersebut
         $siswa = Siswa::with('orangTuaWali', 'masterKelas')
-            ->whereHas('masterKelas', function($query) use ($waliKelas) {
-                $query->where('wali_kelas_id', $waliKelas->id);
-            })
+            ->whereIn('master_kelas_id', $masterKelas->pluck('id'))
             ->get();
             
         return view('pagewalikelas.orang_tua_wali_dan_siswa.index', compact('siswa'));
@@ -49,9 +60,7 @@ class OrangTuaWalidanSiswaController extends Controller
             'no_wa_wali' => 'nullable|numeric',
             'nama_anak' => 'required',
             'jenis_kelamin' => 'required',
-            'nik_anak' => 'required|numeric|digits:16',
             'master_kelas_id' => 'required|exists:master_kelas,id',
-            'nis' => 'required|numeric',
             'nisn' => 'required|numeric|digits:10'
         ]);
 
@@ -73,9 +82,7 @@ class OrangTuaWalidanSiswaController extends Controller
         $siswa = Siswa::create([
             'nama_anak' => $request->nama_anak,
             'jenis_kelamin' => $request->jenis_kelamin,
-            'nik_anak' => $request->nik_anak,
             'master_kelas_id' => $request->master_kelas_id,
-            'nis' => $request->nis,
             'nisn' => $request->nisn,
             'orang_tua_wali_id' => $orangTuaWali->id
         ]);
@@ -106,9 +113,7 @@ class OrangTuaWalidanSiswaController extends Controller
             'no_wa_wali' => 'nullable|numeric',
             'nama_anak' => 'required',
             'jenis_kelamin' => 'required',
-            'nik_anak' => 'required|numeric|digits:16',
             'master_kelas_id' => 'required|exists:master_kelas,id',
-            'nis' => 'required|numeric',
             'nisn' => 'required|numeric|digits:10'
         ]);
 
@@ -132,9 +137,7 @@ class OrangTuaWalidanSiswaController extends Controller
         $siswa->update([
             'nama_anak' => $request->nama_anak, 
             'jenis_kelamin' => $request->jenis_kelamin,
-            'nik_anak' => $request->nik_anak,
             'master_kelas_id' => $request->master_kelas_id,
-            'nis' => $request->nis,
             'nisn' => $request->nisn
         ]); 
 

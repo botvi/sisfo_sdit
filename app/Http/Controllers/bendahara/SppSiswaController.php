@@ -11,6 +11,7 @@ use App\Models\WhatsappApi;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Http;
+use Carbon\Carbon;
 
 
 class SppSiswaController extends Controller
@@ -116,7 +117,98 @@ class SppSiswaController extends Controller
     return redirect()->route('spp.index');
    }
 
+   public function kirimPesanBelumBayar()
+   {
+    // Ambil bulan kemarin berdasarkan tanggal_bayar
+    $bulanKemarin = Carbon::now()->subMonth();
+    $bulanKemarinIndonesia = $this->konversiBulanIndonesia($bulanKemarin->format('F Y'));
+    
+    // Ambil semua siswa yang aktif
+    $semuaSiswa = Siswa::with('orangTuaWali')->get();
+    
+    // Ambil siswa yang sudah bayar bulan kemarin berdasarkan tanggal_bayar dan bulan_bayar
+    $siswaSudahBayar = SppSiswa::where(function($query) use ($bulanKemarin) {
+            $query->whereYear('tanggal_bayar', $bulanKemarin->year)
+                  ->whereMonth('tanggal_bayar', $bulanKemarin->month);
+        })
+        ->orWhere('bulan_bayar', $bulanKemarinIndonesia)
+        ->pluck('siswa_id')
+        ->toArray();
+    
+    // Filter siswa yang belum bayar
+    $siswaBelumBayar = $semuaSiswa->whereNotIn('id', $siswaSudahBayar);
+    
+    $token = WhatsappApi::first()->access_token;
+    $pesanTerkirim = 0;
+    $pesanGagal = 0;
+    
+    foreach ($siswaBelumBayar as $siswa) {
+        if ($siswa->orangTuaWali) {
+            $target = $siswa->orangTuaWali->no_wa_ortu ?? $siswa->orangTuaWali->no_wa_wali;
+            
+            if ($target) {
+                $message = "Assalamu'alaikum Wr. Wb.\n\nMohon maaf, kami ingin mengingatkan bahwa pembayaran SPP untuk anak Bapak/Ibu {$siswa->nama_anak} untuk bulan {$bulanKemarinIndonesia} belum dilakukan.\n\nMohon segera melakukan pembayaran untuk menghindari keterlambatan.\n\nTerima kasih atas perhatiannya.";
+                
+                try {
+                    $response = Http::withoutVerifying()->get('https://api.fonnte.com/send', [
+                        'token' => $token,
+                        'target' => $target,
+                        'message' => $message,
+                    ]);
+                    
+                    if ($response->successful()) {
+                        $pesanTerkirim++;
+                    } else {
+                        $pesanGagal++;
+                    }
+                } catch (\Exception $e) {
+                    $pesanGagal++;
+                }
+                
+                // Delay untuk menghindari rate limiting
+                sleep(1);
+            }
+        }
+    }
+    
+    $totalSiswa = $siswaBelumBayar->count();
+    $message = "Pesan pengingatan telah dikirim ke {$pesanTerkirim} orang tua dari {$totalSiswa} siswa yang belum membayar SPP bulan {$bulanKemarinIndonesia}. Pesan gagal: {$pesanGagal}";
+    
+    return response()->json([
+        'success' => true,
+        'message' => $message,
+        'data' => [
+            'total_siswa' => $totalSiswa,
+            'pesan_terkirim' => $pesanTerkirim,
+            'pesan_gagal' => $pesanGagal,
+            'bulan' => $bulanKemarinIndonesia
+        ]
+    ]);
+   }
 
+   private function konversiBulanIndonesia($bulanInggris)
+   {
+    $bulan = [
+        'January' => 'Januari',
+        'February' => 'Februari',
+        'March' => 'Maret',
+        'April' => 'April',
+        'May' => 'Mei',
+        'June' => 'Juni',
+        'July' => 'Juli',
+        'August' => 'Agustus',
+        'September' => 'September',
+        'October' => 'Oktober',
+        'November' => 'November',
+        'December' => 'Desember'
+    ];
+    
+    foreach ($bulan as $en => $id) {
+        $bulanInggris = str_replace($en, $id, $bulanInggris);
+    }
+    
+    return $bulanInggris;
+   }
 
    public function kartuSpp($nama_anak)
    {

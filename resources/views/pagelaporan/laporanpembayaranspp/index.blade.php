@@ -59,13 +59,8 @@
                                         <td>{{ $spp->bulan_bayar }}</td>
                                         <td>{{ $spp->tahunPelajaran->tahun_pelajaran }}</td>
                                         <td>Rp {{ number_format($spp->jumlah_bayar, 0, ',', '.') }}</td>
-                                        <td>
-                                            @if($spp->status == 'Lunas')
-                                                <span class="badge bg-success">Lunas</span>
-                                            @else
-                                                <span class="badge bg-danger">Belum Lunas</span>
-                                            @endif
-                                        </td>
+                                        <td><span class="badge bg-{{ $spp->status_bayar == 'lunas' ? 'success' : 'danger' }}">{{ $spp->status_bayar }}</span></td>
+
                                     </tr>
                                 @empty
                                     <tr>

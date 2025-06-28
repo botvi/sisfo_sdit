@@ -33,10 +33,11 @@
                                 @csrf
                                 <div class="col-md-12">
                                     <label for="siswa_id" class="form-label">Nama Siswa</label>
+                                    <input type="text" class="form-control" id="search_siswa" placeholder="Cari nama siswa..." autocomplete="off">
                                     <select class="form-control" id="siswa_id" name="siswa_id" required>
                                         <option value="">Pilih Siswa</option>
                                         @foreach ($siswa as $item)
-                                            <option value="{{ $item->id }}">{{ $item->nama_anak }}</option>
+                                            <option value="{{ $item->id }}" data-nama="{{ $item->nama_anak }}">{{ $item->nama_anak }}</option>
                                         @endforeach
                                     </select>
                                     <small class="text-danger">
@@ -45,6 +46,37 @@
                                         @endforeach
                                     </small>
                                 </div>
+
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        const searchInput = document.getElementById('search_siswa');
+                                        const selectElement = document.getElementById('siswa_id');
+                                        const options = selectElement.querySelectorAll('option');
+
+                                        searchInput.addEventListener('input', function() {
+                                            const searchTerm = this.value.toLowerCase();
+                                            
+                                            options.forEach(option => {
+                                                if (option.value === '') return; // Skip placeholder option
+                                                
+                                                const namaSiswa = option.getAttribute('data-nama').toLowerCase();
+                                                if (namaSiswa.includes(searchTerm)) {
+                                                    option.style.display = '';
+                                                } else {
+                                                    option.style.display = 'none';
+                                                }
+                                            });
+                                        });
+
+                                        // Reset search when select changes
+                                        selectElement.addEventListener('change', function() {
+                                            searchInput.value = '';
+                                            options.forEach(option => {
+                                                option.style.display = '';
+                                            });
+                                        });
+                                    });
+                                </script>
                                 <div class="col-md-12">
                                     <label for="tanggal_bayar" class="form-label">Tanggal Bayar</label>
                                     <input type="date" class="form-control" id="tanggal_bayar" name="tanggal_bayar"
