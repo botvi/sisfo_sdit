@@ -13,7 +13,7 @@ class MasterKelas extends Model
 
     public function waliKelas()
     {
-        return $this->belongsTo(WaliKelas::class);
+        return $this->belongsTo(WaliKelas::class, 'wali_kelas_id');
     }
 
     public function siswa()

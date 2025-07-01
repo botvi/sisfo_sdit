@@ -20,10 +20,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link href="{{ asset('admin') }}/assets/css/app.css" rel="stylesheet">
     <link href="{{ asset('admin') }}/assets/css/icons.css" rel="stylesheet">
-    <title>Login - Sistem informasi SDIT LA TAHZAN</title>
+    <title>Login - SDIT LA TAHZAN</title>
     <style>
         
-
         .section-authentication-signin {
             min-height: 100vh;
         }
@@ -35,7 +34,7 @@
 
 </head>
 
-<body class="bg-login">
+<body class="bg-login" style="background-image: url({{ asset('env/bg_login3.png') }}); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
     <!--wrapper-->
     <div class="wrapper">
 
@@ -44,12 +43,13 @@
                 <div class="row align-items-center">
                 
                     <!-- Form -->
-                    <div class="col-lg-12">
+                    <div class="col-lg-5" style="margin: 0 auto;">
                         <div class="card">
                             <div class="card-body">
                                 <div class="border p-4 rounded">
                                     <div class="text-center">
-                                      <h3>SDIT LA TAHZAN</h3>
+                                        <img src="{{ asset('env') }}/logo_text.jpg" width="300" alt="Logo SDIT LA TAHZAN"
+                                            class="img-fluid">
                                     </div>
                                     <div class="login-separater text-center mb-4">
                                         <span>MASUK MENGGUNAKAN USERNAME DAN PASSWORD</span>

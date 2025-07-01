@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kartu Pembayaran {{ $spp->siswa->nama_anak }}</title>
+    <title>Kartu Pembayaran {{ $siswa->nama_anak }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -64,7 +64,7 @@
     <div class="header">
         <h3>KARTU PEMBAYARAN</h3>
         <h3>SDIT LA TAHZAN GUNUNG TOAR</h3>
-        <h3>TP. {{ $spp->tahunPelajaran->tahun_pelajaran }}</h3>
+        <h3>TP. {{ $tahunPelajaran->tahun_pelajaran }}</h3>
     </div>
 
     <div class="header">
@@ -72,12 +72,12 @@
         <tr>
             <td style="border: none; padding: 2px;">NAMA ANAK</td>
             <td style="border: none; padding: 2px;">:</td>
-            <td style="border: none; padding: 2px;">{{ strtoupper($spp->siswa->nama_anak) }}</td>
+            <td style="border: none; padding: 2px;">{{ strtoupper($siswa->nama_anak) }}</td>
         </tr>
         <tr>
             <td style="border: none; padding: 2px;">KELAS</td>
             <td style="border: none; padding: 2px;">:</td>
-            <td style="border: none; padding: 2px;">{{ strtoupper($spp->siswa->masterKelas->kelas) }}</td>
+            <td style="border: none; padding: 2px;">{{ strtoupper($siswa->masterKelas->kelas) }}</td>
         </tr>
      </table>
     </div>
@@ -100,20 +100,23 @@
         <tbody>
           @php
             $bulan = ['Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'];
+            // Buat array untuk mapping data pembayaran
+            $pembayaranSpp = $sppData->keyBy('bulan_bayar');
+            $pembayaranEkskul = $sppData->keyBy('bulan_bayar');
           @endphp
           
           @foreach($bulan as $index => $nama_bulan)
           <tr>
             <td class="border border-black align-top">{{ $index + 1 }}</td>
             <td class="border border-black">
-              @if($spp->bulan_bayar == $nama_bulan)
-                {{ \Carbon\Carbon::parse($spp->tanggal_bayar)->locale('id')->isoFormat('D MMMM Y') }}
+              @if(isset($pembayaranSpp[$nama_bulan]))
+                {{ \Carbon\Carbon::parse($pembayaranSpp[$nama_bulan]->tanggal_bayar)->format('d-m-Y') }}
               @endif
             </td>
             <td class="border border-black">{{ strtoupper($nama_bulan) }}</td>
             <td class="border border-black">
-              @if($spp->bulan_bayar == $nama_bulan)
-                {{ \Carbon\Carbon::parse($spp->tanggal_bayar)->locale('id')->isoFormat('D MMMM Y') }}
+              @if(isset($pembayaranEkskul[$nama_bulan]))
+                {{ \Carbon\Carbon::parse($pembayaranEkskul[$nama_bulan]->tanggal_bayar)->format('d-m-Y') }}
               @endif
             </td>
             <td class="border border-black">{{ strtoupper($nama_bulan) }}</td>
@@ -131,12 +134,12 @@
             <p style="margin-bottom: 0;">MENGETAHUI,</p>
             <p style="margin-top: 0;">KEPALA SEKOLAH</p>
             <br><br><br>
-            <p>AHMAD SARPELI, S.Pd.i., M.Pd</p>
+            <p>{{ strtoupper($kepalaSekolah->nama) }}</p>
         </div>
         <div class="signature">
             <p>BENDAHARA</p>
             <br><br><br><br>
-            <p>{{ strtoupper(Auth::user()->nama) }}</p>
+            <p>{{ strtoupper($bendahara->nama) }}</p>
         </div>
     </div>
 

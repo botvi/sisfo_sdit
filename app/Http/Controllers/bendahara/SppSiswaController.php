@@ -12,14 +12,42 @@ use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
+use App\Models\MasterKelas;
+use App\Models\User;
 
 
 class SppSiswaController extends Controller
 {
-   public function index()
+   public function index(Request $request)
    {
-    $data = SppSiswa::with('siswa' , 'tahunPelajaran')->get();
-    return view('pagebendahara.spp.index', compact('data'));
+    $query = SppSiswa::with(['siswa.masterKelas', 'tahunPelajaran']);
+    
+    // Filter berdasarkan kelas
+    if ($request->filled('kelas_id')) {
+        $query->whereHas('siswa', function($q) use ($request) {
+            $q->where('master_kelas_id', $request->kelas_id);
+        });
+    }
+    
+    // Filter berdasarkan nama siswa
+    if ($request->filled('nama_siswa')) {
+        $query->whereHas('siswa', function($q) use ($request) {
+            $q->where('nama_anak', 'like', '%' . $request->nama_siswa . '%');
+        });
+    }
+    
+    // Filter berdasarkan tahun pelajaran
+    if ($request->filled('tahun_pelajaran_id')) {
+        $query->where('tahun_pelajaran_id', $request->tahun_pelajaran_id);
+    }
+    
+    $data = $query->get();
+    
+    // Data untuk dropdown filter
+    $kelas = MasterKelas::all();
+    $tahunPelajaran = MasterTahunPelajaran::all();
+    
+    return view('pagebendahara.spp.index', compact('data', 'kelas', 'tahunPelajaran'));
    }
 
    public function create()
@@ -56,10 +84,11 @@ class SppSiswaController extends Controller
     
     if ($siswa && $siswa->orangTuaWali) {
         $target = $siswa->orangTuaWali->no_wa_ortu ?? $siswa->orangTuaWali->no_wa_wali;
-        
+
+        $statusText = $request->status_bayar === 'lunas' ? 'Lunas' : 'Belum lunas';
         if ($target) {
-            $token = WhatsappApi::first()->access_token;
-            $message = "Assalamu'alaikum Wr. Wb.\n\nData pembayaran SPP untuk anak Bapak/Ibu {$siswa->nama_anak} telah diperbarui:\nBulan: {$request->bulan_bayar}\nJumlah: Rp {$request->jumlah_bayar}\nTanggal: {$request->tanggal_bayar}\n\nTerima kasih.";
+                $token = WhatsappApi::first()->access_token;
+            $message = "Assalamu'alaikum Wr. Wb.\n\nData pembayaran SPP untuk anak Bapak/Ibu {$siswa->nama_anak} telah diperbarui:\nBulan: {$request->bulan_bayar}\nJumlah: Rp {$request->jumlah_bayar}\nTanggal: {$request->tanggal_bayar}\nDinyatakan: {$statusText}\n\nTerima kasih.";
             
             Http::withoutVerifying()->get('https://api.fonnte.com/send', [
                 'token' => $token,
@@ -84,6 +113,17 @@ class SppSiswaController extends Controller
         'status_bayar' => 'required|string',
     ]);
 
+    // Cek apakah sudah ada pembayaran untuk siswa, bulan, dan tahun pelajaran yang sama
+    $existingPayment = SppSiswa::where('siswa_id', $request->siswa_id)
+        ->where('bulan_bayar', $request->bulan_bayar)
+        ->where('tahun_pelajaran_id', $request->tahun_pelajaran_id)
+        ->first();
+
+    if ($existingPayment) {
+        Alert::warning('Peringatan', 'Siswa ini sudah ada pembayaran pada bulan ' . $request->bulan_bayar . ' tahun pelajaran ini. Jika ada perubahan pembayaran atau pelunasan angsuran, silahkan edit data yang sudah ada.');
+        return redirect()->back()->withInput();
+    }
+
     $spp = SppSiswa::create($request->all());
     
     // Ambil data siswa dan orang tua/wali untuk notifikasi
@@ -94,7 +134,8 @@ class SppSiswaController extends Controller
         
         if ($target) {
             $token = WhatsappApi::first()->access_token;
-            $message = "Assalamu'alaikum Wr. Wb.\n\nAnak Bapak/Ibu {$siswa->nama_anak} telah melakukan pembayaran SPP untuk bulan {$request->bulan_bayar}.\nJumlah: Rp {$request->jumlah_bayar}\nTanggal: {$request->tanggal_bayar}\n\nTerima kasih.";
+            $statusText = $request->status_bayar === 'lunas' ? 'Lunas' : 'Belum lunas';
+            $message = "Assalamu'alaikum Wr. Wb.\n\nAnak Bapak/Ibu {$siswa->nama_anak}, {$statusText} melakukan pembayaran SPP untuk bulan {$request->bulan_bayar}.\nJumlah: Rp {$request->jumlah_bayar}\nTanggal: {$request->tanggal_bayar}\n\nTerima kasih.";
             
             Http::withoutVerifying()->get('https://api.fonnte.com/send', [
                 'token' => $token,
@@ -212,23 +253,32 @@ class SppSiswaController extends Controller
 
    public function kartuSpp($nama_anak)
    {
+    // Decode URL parameter
+    $nama_anak = urldecode($nama_anak);
     $siswa = Siswa::where('nama_anak', $nama_anak)->with('masterKelas')->first();
-    
+    $kepalaSekolah = User::where('role', 'kepala_sekolah')->first();
+    $bendahara = User::where('role', 'bendahara')->first();
     if (!$siswa) {
         Alert::error('Error', 'Data siswa tidak ditemukan');
         return redirect()->back();
     }
 
-    $spp = SppSiswa::with('tahunPelajaran')
+    $sppData = SppSiswa::with('tahunPelajaran')
         ->where('siswa_id', $siswa->id)
-        ->first();
+        ->where('status_bayar', 'lunas')
+        ->orderBy('tahun_pelajaran_id', 'asc')
+        ->orderBy('bulan_bayar', 'asc')
+        ->get();
 
-    if (!$spp) {
+    if ($sppData->isEmpty()) {
         Alert::error('Error', 'Data SPP tidak ditemukan');
         return redirect()->back();
     }
 
-    return view('pagebendahara.spp.kartu_pembayaran', compact('spp', 'siswa'));
+    // Ambil tahun pelajaran terbaru untuk header
+    $tahunPelajaran = $sppData->last()->tahunPelajaran;
+
+    return view('pagebendahara.spp.kartu_pembayaran', compact('sppData', 'siswa', 'tahunPelajaran', 'kepalaSekolah', 'bendahara'));
    }
 
   

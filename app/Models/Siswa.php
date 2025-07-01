@@ -13,12 +13,12 @@ class Siswa extends Model
 
     public function masterKelas()
     {
-        return $this->belongsTo(MasterKelas::class);
+        return $this->belongsTo(MasterKelas::class, 'master_kelas_id');
     }
 
     public function orangTuaWali()
     {
-        return $this->belongsTo(OrangTuaWali::class);
+        return $this->belongsTo(OrangTuaWali::class, 'orang_tua_wali_id');
     }
     
 }
