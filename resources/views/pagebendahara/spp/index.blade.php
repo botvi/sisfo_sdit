@@ -18,6 +18,55 @@
             <!--breadcrumb-->
             <h6 class="mb-0 text-uppercase">Data SPP Siswa</h6>
             <hr/>
+            
+            <!-- Modal Pilih Bulan dan Tahun Pelajaran -->
+            <div class="modal fade" id="modalPilihBulanTahun" tabindex="-1" aria-labelledby="modalPilihBulanTahunLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalPilihBulanTahunLabel">Pilih Bulan dan Tahun Pelajaran</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="formPilihBulanTahun">
+                                <div class="mb-3">
+                                    <label for="bulan_pilih" class="form-label">Bulan</label>
+                                    <select class="form-select" id="bulan_pilih" name="bulan" required>
+                                        <option value="">Pilih Bulan</option>
+                                        <option value="Januari">Januari</option>
+                                        <option value="Februari">Februari</option>
+                                        <option value="Maret">Maret</option>
+                                        <option value="April">April</option>
+                                        <option value="Mei">Mei</option>
+                                        <option value="Juni">Juni</option>
+                                        <option value="Juli">Juli</option>
+                                        <option value="Agustus">Agustus</option>
+                                        <option value="September">September</option>
+                                        <option value="Oktober">Oktober</option>
+                                        <option value="November">November</option>
+                                        <option value="Desember">Desember</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tahun_pelajaran_pilih" class="form-label">Tahun Pelajaran</label>
+                                    <select class="form-select" id="tahun_pelajaran_pilih" name="tahun_pelajaran_id" required>
+                                        <option value="">Pilih Tahun Pelajaran</option>
+                                        @foreach($tahunPelajaran as $tp)
+                                            <option value="{{ $tp->id }}">{{ $tp->tahun_pelajaran }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" class="btn btn-warning" onclick="kirimPesanPengingatan()">
+                                <i class="bx bx-message-square-dots"></i> Kirim Pesan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="card">
                 <div class="card-body">
                     <!-- Form Filter -->
@@ -70,7 +119,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
                             <a href="{{ route('spp.create') }}" class="btn btn-primary">Tambah Data</a>
-                            <button type="button" class="btn btn-warning" onclick="kirimPesanPengingatan()">
+                            <button type="button" class="btn btn-warning" onclick="bukaModalPilihBulanTahun()">
                                 <i class="bx bx-message-square-dots"></i> Kirim Pesan Pengingatan
                             </button>
                         </div>
@@ -198,10 +247,35 @@
             }, 500);
         });
 
+        function bukaModalPilihBulanTahun() {
+            // Reset form
+            document.getElementById('formPilihBulanTahun').reset();
+            // Tampilkan modal
+            new bootstrap.Modal(document.getElementById('modalPilihBulanTahun')).show();
+        }
+
         function kirimPesanPengingatan() {
+            // Ambil nilai dari form
+            const bulan = document.getElementById('bulan_pilih').value;
+            const tahunPelajaranId = document.getElementById('tahun_pelajaran_pilih').value;
+            
+            // Validasi form
+            if (!bulan || !tahunPelajaranId) {
+                Swal.fire({
+                    title: 'Peringatan!',
+                    text: 'Silakan pilih bulan dan tahun pelajaran terlebih dahulu',
+                    icon: 'warning'
+                });
+                return;
+            }
+            
+            // Ambil nama bulan dan tahun pelajaran untuk ditampilkan
+            const namaBulan = document.getElementById('bulan_pilih').options[document.getElementById('bulan_pilih').selectedIndex].text;
+            const namaTahunPelajaran = document.getElementById('tahun_pelajaran_pilih').options[document.getElementById('tahun_pelajaran_pilih').selectedIndex].text;
+            
             Swal.fire({
                 title: 'Kirim Pesan Pengingatan?',
-                text: "Pesan akan dikirim ke semua orang tua yang anaknya belum membayar SPP bulan kemarin",
+                text: `Pesan akan dikirim ke semua orang tua yang anaknya belum membayar SPP bulan ${namaBulan} tahun pelajaran ${namaTahunPelajaran}`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#ffc107',
@@ -210,6 +284,9 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Tutup modal
+                    bootstrap.Modal.getInstance(document.getElementById('modalPilihBulanTahun')).hide();
+                    
                     // Tampilkan loading
                     Swal.fire({
                         title: 'Mengirim Pesan...',
@@ -227,6 +304,10 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                             'Content-Type': 'application/json',
                         },
+                        body: JSON.stringify({
+                            bulan: bulan,
+                            tahun_pelajaran_id: tahunPelajaranId
+                        })
                     })
                     .then(response => response.json())
                     .then(data => {

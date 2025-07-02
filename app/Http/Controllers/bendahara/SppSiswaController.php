@@ -158,21 +158,26 @@ class SppSiswaController extends Controller
     return redirect()->route('spp.index');
    }
 
-   public function kirimPesanBelumBayar()
+   public function kirimPesanBelumBayar(Request $request)
    {
-    // Ambil bulan kemarin berdasarkan tanggal_bayar
-    $bulanKemarin = Carbon::now()->subMonth();
-    $bulanKemarinIndonesia = $this->konversiBulanIndonesia($bulanKemarin->format('F Y'));
+    // Validasi input
+    $request->validate([
+        'bulan' => 'required|string',
+        'tahun_pelajaran_id' => 'required|exists:master_tahun_pelajarans,id'
+    ]);
+
+    $bulan = $request->bulan;
+    $tahunPelajaranId = $request->tahun_pelajaran_id;
+    
+    // Ambil data tahun pelajaran
+    $tahunPelajaran = MasterTahunPelajaran::find($tahunPelajaranId);
     
     // Ambil semua siswa yang aktif
     $semuaSiswa = Siswa::with('orangTuaWali')->get();
     
-    // Ambil siswa yang sudah bayar bulan kemarin berdasarkan tanggal_bayar dan bulan_bayar
-    $siswaSudahBayar = SppSiswa::where(function($query) use ($bulanKemarin) {
-            $query->whereYear('tanggal_bayar', $bulanKemarin->year)
-                  ->whereMonth('tanggal_bayar', $bulanKemarin->month);
-        })
-        ->orWhere('bulan_bayar', $bulanKemarinIndonesia)
+    // Ambil siswa yang sudah bayar pada bulan dan tahun pelajaran yang dipilih
+    $siswaSudahBayar = SppSiswa::where('bulan_bayar', $bulan)
+        ->where('tahun_pelajaran_id', $tahunPelajaranId)
         ->pluck('siswa_id')
         ->toArray();
     
@@ -188,7 +193,7 @@ class SppSiswaController extends Controller
             $target = $siswa->orangTuaWali->no_wa_ortu ?? $siswa->orangTuaWali->no_wa_wali;
             
             if ($target) {
-                $message = "Assalamu'alaikum Wr. Wb.\n\nMohon maaf, kami ingin mengingatkan bahwa pembayaran SPP untuk anak Bapak/Ibu {$siswa->nama_anak} untuk bulan {$bulanKemarinIndonesia} belum dilakukan.\n\nMohon segera melakukan pembayaran untuk menghindari keterlambatan.\n\nTerima kasih atas perhatiannya.";
+                $message = "Assalamu'alaikum Wr. Wb.\n\nMohon maaf, kami ingin mengingatkan bahwa pembayaran SPP untuk anak Bapak/Ibu {$siswa->nama_anak} untuk bulan {$bulan} tahun pelajaran {$tahunPelajaran->tahun_pelajaran} belum dilakukan.\n\nMohon segera melakukan pembayaran untuk menghindari keterlambatan.\n\nTerima kasih atas perhatiannya.";
                 
                 try {
                     $response = Http::withoutVerifying()->get('https://api.fonnte.com/send', [
@@ -213,7 +218,7 @@ class SppSiswaController extends Controller
     }
     
     $totalSiswa = $siswaBelumBayar->count();
-    $message = "Pesan pengingatan telah dikirim ke {$pesanTerkirim} orang tua dari {$totalSiswa} siswa yang belum membayar SPP bulan {$bulanKemarinIndonesia}. Pesan gagal: {$pesanGagal}";
+    $message = "Pesan pengingatan telah dikirim ke {$pesanTerkirim} orang tua dari {$totalSiswa} siswa yang belum membayar SPP bulan {$bulan} tahun pelajaran {$tahunPelajaran->tahun_pelajaran}. Pesan gagal: {$pesanGagal}";
     
     return response()->json([
         'success' => true,
@@ -222,7 +227,8 @@ class SppSiswaController extends Controller
             'total_siswa' => $totalSiswa,
             'pesan_terkirim' => $pesanTerkirim,
             'pesan_gagal' => $pesanGagal,
-            'bulan' => $bulanKemarinIndonesia
+            'bulan' => $bulan,
+            'tahun_pelajaran' => $tahunPelajaran->tahun_pelajaran
         ]
     ]);
    }

@@ -137,9 +137,7 @@
                                 <div class="col-md-12">
                                     <label for="status_bayar" class="form-label">Status Bayar</label>
                                     <select class="form-control" id="status_bayar" name="status_bayar" required>
-                                        <option value="">Pilih Status Bayar</option>
                                         <option value="lunas">Lunas</option>
-                                        <option value="belum_lunas">Belum Lunas</option>
                                     </select>
                                     <small class="text-danger">
                                         @foreach ($errors->get('status_bayar') as $error)
