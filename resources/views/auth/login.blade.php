@@ -34,7 +34,7 @@
 
 </head>
 
-<body class="bg-login" style="background-image: url({{ asset('env/bg_login3.png') }}); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
+<body class="bg-login" style="background-image: url({{ asset('env/sdit.jpg') }}); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
     <!--wrapper-->
     <div class="wrapper">
 
