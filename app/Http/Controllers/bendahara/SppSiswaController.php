@@ -40,14 +40,49 @@ class SppSiswaController extends Controller
     if ($request->filled('tahun_pelajaran_id')) {
         $query->where('tahun_pelajaran_id', $request->tahun_pelajaran_id);
     }
+
+    // Filter berdasarkan status pembayaran
+    if ($request->filled('status_bayar')) {
+        $query->where('status_bayar', $request->status_bayar);
+    }
+
+    // Filter berdasarkan bulan
+    if ($request->filled('bulan_bayar')) {
+        $query->where('bulan_bayar', $request->bulan_bayar);
+    }
+
+    // Filter berdasarkan tanggal (range)
+    if ($request->filled('tanggal_mulai')) {
+        $query->where('tanggal_bayar', '>=', $request->tanggal_mulai);
+    }
+
+    if ($request->filled('tanggal_akhir')) {
+        $query->where('tanggal_bayar', '<=', $request->tanggal_akhir);
+    }
     
-    $data = $query->get();
+    // Order by tanggal bayar terbaru
+    $query->orderBy('tanggal_bayar', 'desc');
+    
+    // Pagination
+    $data = $query->paginate(15)->withQueryString();
     
     // Data untuk dropdown filter
-    $kelas = MasterKelas::all();
-    $tahunPelajaran = MasterTahunPelajaran::all();
+    $kelas = MasterKelas::orderBy('kelas', 'asc')->get();
+    $tahunPelajaran = MasterTahunPelajaran::orderBy('tahun_pelajaran', 'desc')->get();
     
-    return view('pagebendahara.spp.index', compact('data', 'kelas', 'tahunPelajaran'));
+    // Data untuk filter bulan
+    $bulanList = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    
+    // Data untuk filter status
+    $statusList = [
+        'lunas' => 'Lunas',
+        'belum_lunas' => 'Belum Lunas'
+    ];
+    
+    return view('pagebendahara.spp.index', compact('data', 'kelas', 'tahunPelajaran', 'bulanList', 'statusList'));
    }
 
    public function create()
@@ -285,6 +320,96 @@ class SppSiswaController extends Controller
     $tahunPelajaran = $sppData->last()->tahunPelajaran;
 
     return view('pagebendahara.spp.kartu_pembayaran', compact('sppData', 'siswa', 'tahunPelajaran', 'kepalaSekolah', 'bendahara'));
+   }
+
+   public function exportExcel(Request $request)
+   {
+    $query = SppSiswa::with(['siswa.masterKelas', 'tahunPelajaran']);
+    
+    // Filter berdasarkan kelas
+    if ($request->filled('kelas_id')) {
+        $query->whereHas('siswa', function($q) use ($request) {
+            $q->where('master_kelas_id', $request->kelas_id);
+        });
+    }
+    
+    // Filter berdasarkan nama siswa
+    if ($request->filled('nama_siswa')) {
+        $query->whereHas('siswa', function($q) use ($request) {
+            $q->where('nama_anak', 'like', '%' . $request->nama_siswa . '%');
+        });
+    }
+    
+    // Filter berdasarkan tahun pelajaran
+    if ($request->filled('tahun_pelajaran_id')) {
+        $query->where('tahun_pelajaran_id', $request->tahun_pelajaran_id);
+    }
+
+    // Filter berdasarkan status pembayaran
+    if ($request->filled('status_bayar')) {
+        $query->where('status_bayar', $request->status_bayar);
+    }
+
+    // Filter berdasarkan bulan
+    if ($request->filled('bulan_bayar')) {
+        $query->where('bulan_bayar', $request->bulan_bayar);
+    }
+
+    // Filter berdasarkan tanggal (range)
+    if ($request->filled('tanggal_mulai')) {
+        $query->where('tanggal_bayar', '>=', $request->tanggal_mulai);
+    }
+
+    if ($request->filled('tanggal_akhir')) {
+        $query->where('tanggal_bayar', '<=', $request->tanggal_akhir);
+    }
+    
+    // Order by tanggal bayar terbaru
+    $query->orderBy('tanggal_bayar', 'desc');
+    
+    $data = $query->get();
+    
+    $filename = 'data_spp_' . date('Y-m-d_H-i-s') . '.csv';
+    
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+    ];
+    
+    $callback = function() use ($data) {
+        $file = fopen('php://output', 'w');
+        
+        // Header CSV
+        fputcsv($file, [
+            'No',
+            'Nama Siswa',
+            'Kelas',
+            'Tanggal Bayar',
+            'Bulan Bayar',
+            'Jumlah Bayar',
+            'Tahun Pelajaran',
+            'Status Bayar'
+        ]);
+        
+        // Data
+        $no = 1;
+        foreach ($data as $item) {
+            fputcsv($file, [
+                $no++,
+                $item->siswa->nama_anak,
+                $item->siswa->masterKelas ? $item->siswa->masterKelas->kelas : '-',
+                \Carbon\Carbon::parse($item->tanggal_bayar)->format('d-m-Y'),
+                $item->bulan_bayar,
+                number_format($item->jumlah_bayar, 0, ',', '.'),
+                $item->tahunPelajaran->tahun_pelajaran,
+                $item->status_bayar
+            ]);
+        }
+        
+        fclose($file);
+    };
+    
+    return response()->stream($callback, 200, $headers);
    }
 
   

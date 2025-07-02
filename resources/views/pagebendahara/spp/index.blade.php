@@ -72,8 +72,8 @@
                     <!-- Form Filter -->
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <form method="GET" action="{{ route('spp.index') }}" class="row g-3">
-                                <div class="col-md-3">
+                            <form method="GET" action="{{ route('spp.index') }}" class="row g-3" id="filterForm">
+                                <div class="col-md-2">
                                     <label for="kelas_id" class="form-label">Filter Kelas</label>
                                     <select name="kelas_id" id="kelas_id" class="form-select">
                                         <option value="">Semua Kelas</option>
@@ -84,12 +84,12 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label for="nama_siswa" class="form-label">Filter Nama Siswa</label>
                                     <input type="text" name="nama_siswa" id="nama_siswa" class="form-control" 
                                            value="{{ request('nama_siswa') }}" placeholder="Cari nama siswa...">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label for="tahun_pelajaran_id" class="form-label">Filter Tahun Pelajaran</label>
                                     <select name="tahun_pelajaran_id" id="tahun_pelajaran_id" class="form-select">
                                         <option value="">Semua Tahun Pelajaran</option>
@@ -100,7 +100,19 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-3">
+                              
+                                <div class="col-md-2">
+                                    <label for="bulan_bayar" class="form-label">Filter Bulan</label>
+                                    <select name="bulan_bayar" id="bulan_bayar" class="form-select">
+                                        <option value="">Semua Bulan</option>
+                                        @foreach($bulanList as $bulan)
+                                            <option value="{{ $bulan }}" {{ request('bulan_bayar') == $bulan ? 'selected' : '' }}>
+                                                {{ $bulan }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
                                     <label class="form-label">&nbsp;</label>
                                     <div class="d-flex gap-2">
                                         <button type="submit" class="btn btn-primary">
@@ -111,10 +123,38 @@
                                         </a>
                                     </div>
                                 </div>
+                                
+                              
                             </form>
                         </div>
                     </div>
                     <!-- End Form Filter -->
+                    
+                    <!-- Tampilkan Filter Aktif -->
+                    @if(request('kelas_id') || request('nama_siswa') || request('tahun_pelajaran_id') || request('status_bayar') || request('bulan_bayar') || request('tanggal_mulai') || request('tanggal_akhir'))
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <strong>Filter Aktif:</strong>
+                            <ul class="mb-0 mt-1">
+                                @if(request('kelas_id'))
+                                    @php $kelasAktif = $kelas->find(request('kelas_id')); @endphp
+                                    <li>Kelas: <strong>{{ $kelasAktif ? $kelasAktif->kelas : 'Tidak ditemukan' }}</strong></li>
+                                @endif
+                                @if(request('nama_siswa'))
+                                    <li>Nama Siswa: <strong>{{ request('nama_siswa') }}</strong></li>
+                                @endif
+                                @if(request('tahun_pelajaran_id'))
+                                    @php $tpAktif = $tahunPelajaran->find(request('tahun_pelajaran_id')); @endphp
+                                    <li>Tahun Pelajaran: <strong>{{ $tpAktif ? $tpAktif->tahun_pelajaran : 'Tidak ditemukan' }}</strong></li>
+                                @endif
+                               
+                                @if(request('bulan_bayar'))
+                                    <li>Bulan: <strong>{{ request('bulan_bayar') }}</strong></li>
+                                @endif
+                              
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
                     
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
@@ -122,10 +162,17 @@
                             <button type="button" class="btn btn-warning" onclick="bukaModalPilihBulanTahun()">
                                 <i class="bx bx-message-square-dots"></i> Kirim Pesan Pengingatan
                             </button>
+                            {{-- <a href="{{ route('spp.export') }}?{{ http_build_query(request()->all()) }}" class="btn btn-success">
+                                <i class="bx bx-download"></i> Export Excel
+                            </a> --}}
                         </div>
-                        @if(request('kelas_id') || request('nama_siswa') || request('tahun_pelajaran_id'))
+                        @if(request('kelas_id') || request('nama_siswa') || request('tahun_pelajaran_id') || request('status_bayar') || request('bulan_bayar') || request('tanggal_mulai') || request('tanggal_akhir'))
                             <div class="text-muted">
-                                <small>Menampilkan {{ $data->count() }} data dari hasil filter</small>
+                                <small>Menampilkan {{ $data->count() }} data dari {{ $data->total() }} total data (halaman {{ $data->currentPage() }} dari {{ $data->lastPage() }})</small>
+                            </div>
+                        @else
+                            <div class="text-muted">
+                                <small>Total {{ $data->total() }} data (halaman {{ $data->currentPage() }} dari {{ $data->lastPage() }})</small>
                             </div>
                         @endif
                     </div>
@@ -197,6 +244,8 @@
                             </tfoot>
                         </table>
                     </div>
+                    
+                    
                 </div>
             </div>
         </div>
@@ -231,11 +280,28 @@
 
         // Auto-submit form saat dropdown berubah
         document.getElementById('kelas_id').addEventListener('change', function() {
-            document.querySelector('form').submit();
+            document.getElementById('filterForm').submit();
         });
         
         document.getElementById('tahun_pelajaran_id').addEventListener('change', function() {
-            document.querySelector('form').submit();
+            document.getElementById('filterForm').submit();
+        });
+
+        document.getElementById('status_bayar').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+
+        document.getElementById('bulan_bayar').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+
+        // Auto-submit untuk filter tanggal
+        document.getElementById('tanggal_mulai').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+
+        document.getElementById('tanggal_akhir').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
         });
         
         // Debounce untuk input nama siswa
@@ -243,8 +309,8 @@
         document.getElementById('nama_siswa').addEventListener('input', function() {
             clearTimeout(timeout);
             timeout = setTimeout(() => {
-                document.querySelector('form').submit();
-            }, 500);
+                document.getElementById('filterForm').submit();
+            }, 800); // Increased delay for better UX
         });
 
         function bukaModalPilihBulanTahun() {
