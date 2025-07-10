@@ -73,7 +73,7 @@ class HafalanTahfizController extends Controller
             
             if ($target) {
                 $token = WhatsappApi::first()->access_token;
-                $message = "Assalamu'alaikum Wr. Wb.\n\nAnak Bapak/Ibu {$siswa->nama_anak} telah melakukan hafalan pada tanggal {$request->tanggal_hafalan}.\n\nKeterangan: {$request->keterangan}\n\nTerima kasih.";
+                $message = "Assalamu'alaikum Wr. Wb.\n\nSaya selaku Wali Kelas{$siswa->masterKelas->kelas} SDIT\n\nAnak Bapak/Ibu {$siswa->nama_anak} telah melakukan hafalan pada tanggal {$request->tanggal_hafalan}.\n\nKeterangan: {$request->keterangan}\n\nTerima kasih.";
 
                 Http::withoutVerifying()->get('https://api.fonnte.com/send', [
                     'token' => $token,

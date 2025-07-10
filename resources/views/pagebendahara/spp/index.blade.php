@@ -28,6 +28,9 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
+                            <div class="alert alert-warning" role="alert">
+                                <strong>Perhatian!</strong> Form ini digunakan untuk mengirim notifikasi kepada orang tua/wali siswa yang <b>belum membayar SPP</b> pada bulan dan tahun pelajaran yang dipilih.
+                            </div>
                             <form id="formPilihBulanTahun">
                                 <div class="mb-3">
                                     <label for="bulan_pilih" class="form-label">Bulan</label>
@@ -160,7 +163,7 @@
                         <div>
                             <a href="{{ route('spp.create') }}" class="btn btn-primary">Tambah Data</a>
                             <button type="button" class="btn btn-warning" onclick="bukaModalPilihBulanTahun()">
-                                <i class="bx bx-message-square-dots"></i> Kirim Pesan Pengingatan
+                                <i class="bx bx-message-square-dots"></i> Kirim Pesan Pengingatan Belum Bayar
                             </button>
                             {{-- <a href="{{ route('spp.export') }}?{{ http_build_query(request()->all()) }}" class="btn btn-success">
                                 <i class="bx bx-download"></i> Export Excel
