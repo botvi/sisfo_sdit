@@ -222,7 +222,7 @@
                                             </a>
                                         @endif
                                         
-                                        <a href="{{ route('spp.edit', $data->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                        {{-- <a href="{{ route('spp.edit', $data->id) }}" class="btn btn-sm btn-warning">Edit</a> --}}
                                         <form action="{{ route('spp.destroy', $data->id) }}" method="POST" style="display:inline;" class="delete-form">
                                             @csrf
                                             @method('DELETE')
