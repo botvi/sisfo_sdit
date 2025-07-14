@@ -9,6 +9,7 @@ use App\Models\WaliKelas;
 use App\Models\Bendahara;
 use App\Models\MasterKelas;
 use App\Models\User;
+use App\Models\HafalanTahfiz;
 use Illuminate\Http\Request;
 
 class LaporanController extends Controller
@@ -76,4 +77,17 @@ class LaporanController extends Controller
 
         return view('pagelaporan.laporandataorangtuadansiswa.print', compact('siswa', 'kelas'));
     }
+
+    public function laporanhafalan(Request $request)
+    {
+        $data = HafalanTahfiz::with(['siswa.masterKelas'])->get();
+        return view('pagelaporan.laporanhafalan.index', compact('data'));
+    }
+
+    public function printLaporanHafalan(Request $request)
+    {
+        $kepalaSekolah = User::where('role', 'kepala_sekolah')->first();
+        $data = HafalanTahfiz::with(['siswa.masterKelas'])->get();
+        return view('pagelaporan.laporanhafalan.print', compact('data', 'kepalaSekolah'));
+    }   
 }

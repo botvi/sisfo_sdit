@@ -112,6 +112,12 @@
             <div class="menu-title">PROGRESS HAFAALAN TAHFIZ</div>
         </a>
     </li>
+    <li>
+        <a href="{{ route('laporan.hafalan') }}">
+            <div class="parent-icon"><i class='bx bx-book-alt'></i></div>
+            <div class="menu-title">LAPORAN HAFAALAN TAHFIZ</div>
+        </a>
+    </li>
     @endif
 
     @if(Auth::user()->role == 'bendahara')
@@ -139,6 +145,12 @@
                 <a href="{{ route('laporan.data.orang.tua.dan.siswa') }}">
                     <i class='bx bx-right-arrow-alt'></i>
                     LAPORAN DATA ORANG TUA DAN SISWA
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('laporan-admin.hafalan') }}">
+                    <i class='bx bx-right-arrow-alt'></i>
+                    LAPORAN HAFALAN TAHFIZ
                 </a>
             </li>
         </ul>

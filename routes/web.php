@@ -30,6 +30,7 @@ use App\Http\Controllers\wali_kelas\{
     OrangTuaWalidanSiswaController,
     SiswaController,
     KenaikanKelasController,
+    LaporanHafalanController,
 };
 
 use App\Http\Controllers\kepala_sekolah\{
@@ -97,6 +98,8 @@ Route::group(['middleware' => ['role:wali_kelas']], function () {
     Route::resource('hafalan-tahfiz', HafalanTahfizController::class);
     Route::resource('orang-tua-wali-dan-siswa', OrangTuaWalidanSiswaController::class);
     Route::post('/pindah-kelas-multiple', [KenaikanKelasController::class, 'pindahKelasMultiple'])->name('pindah-kelas-multiple');
+    Route::get('/laporan/hafalan', [LaporanHafalanController::class, 'index'])->name('laporan.hafalan');
+    Route::get('/laporan/hafalan/print', [LaporanHafalanController::class, 'printLaporanHafalan'])->name('laporan.hafalan.print');
 });
 
 Route::group(['middleware' => ['role:kepala_sekolah']], function () {
@@ -109,4 +112,7 @@ Route::group(['middleware' => ['role:admin,kepala_sekolah']], function () {
 
     Route::get('/laporan/data-orang-tua-dan-siswa', [LaporanController::class, 'laporandataorangtuadansiswa'])->name('laporan.data.orang.tua.dan.siswa');
     Route::get('/laporan/data-orang-tua-dan-siswa/print', [LaporanController::class, 'printLaporanDataOrangTuaDanSiswa'])->name('laporan.data.orang.tua.dan.siswa.print');
+
+    Route::get('/laporan-admin/hafalan', [LaporanController::class, 'laporanhafalan'])->name('laporan-admin.hafalan');
+    Route::get('/laporan-admin/hafalan/print', [LaporanController::class, 'printLaporanHafalan'])->name('laporan-admin.hafalan.print');
 });
