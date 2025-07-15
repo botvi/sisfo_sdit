@@ -100,6 +100,7 @@ Route::group(['middleware' => ['role:wali_kelas']], function () {
     Route::post('/pindah-kelas-multiple', [KenaikanKelasController::class, 'pindahKelasMultiple'])->name('pindah-kelas-multiple');
     Route::get('/laporan/hafalan', [LaporanHafalanController::class, 'index'])->name('laporan.hafalan');
     Route::get('/laporan/hafalan/print', [LaporanHafalanController::class, 'printLaporanHafalan'])->name('laporan.hafalan.print');
+    Route::get('/laporan/hafalan/print-per-siswa/{siswaId}', [LaporanHafalanController::class, 'printPerSiswa'])->name('laporan.hafalan.print.per.siswa');
 });
 
 Route::group(['middleware' => ['role:kepala_sekolah']], function () {

@@ -51,6 +51,7 @@
             <tr>
                 <th>No</th>
                 <th>Nama Siswa</th>
+                <th>Kelas</th>
                 <th>Tanggal Hafalan</th>
                 <th>Keterangan</th>
             </tr>
@@ -60,12 +61,13 @@
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $h->siswa->nama_anak ?? '-' }}</td>
+                    <td>{{ $h->siswa->masterKelas->kelas ?? '-' }}</td>
                     <td>{{ $h->tanggal_hafalan ?? '-' }}</td>
                     <td>{{ $h->keterangan ?? '-' }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="text-center">Tidak ada data hafalan</td>
+                    <td colspan="5" class="text-center">Tidak ada data hafalan</td>
                 </tr>
             @endforelse
         </tbody>

@@ -80,14 +80,34 @@ class LaporanController extends Controller
 
     public function laporanhafalan(Request $request)
     {
-        $data = HafalanTahfiz::with(['siswa.masterKelas'])->get();
-        return view('pagelaporan.laporanhafalan.index', compact('data'));
+        $kelas = MasterKelas::with('waliKelas')->get();
+        
+        $query = HafalanTahfiz::with(['siswa.masterKelas']);
+
+        if ($request->has('master_kelas_id') && $request->master_kelas_id != '') {
+            $query->whereHas('siswa', function ($q) use ($request) {
+                $q->where('master_kelas_id', $request->master_kelas_id);
+            });
+        }
+
+        $data = $query->get();
+        return view('pagelaporan.laporanhafalan.index', compact('data', 'kelas'));
     }
 
     public function printLaporanHafalan(Request $request)
     {
         $kepalaSekolah = User::where('role', 'kepala_sekolah')->first();
-        $data = HafalanTahfiz::with(['siswa.masterKelas'])->get();
-        return view('pagelaporan.laporanhafalan.print', compact('data', 'kepalaSekolah'));
+        $kelas = MasterKelas::with('waliKelas')->get();
+        
+        $query = HafalanTahfiz::with(['siswa.masterKelas']);
+
+        if ($request->has('master_kelas_id') && $request->master_kelas_id != '') {
+            $query->whereHas('siswa', function ($q) use ($request) {
+                $q->where('master_kelas_id', $request->master_kelas_id);
+            });
+        }
+
+        $data = $query->get();
+        return view('pagelaporan.laporanhafalan.print', compact('data', 'kepalaSekolah', 'kelas'));
     }   
 }
