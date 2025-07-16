@@ -93,7 +93,7 @@
         </a>
     </li>
     <li>
-        <a href="{{ route('pengumuman.index') }}">
+        <a href="{{ route('master-pengumuman.index') }}">
             <div class="parent-icon"><i class='bx bx-message-square-dots'></i></div>
             <div class="menu-title">PENGUMUMAN</div>
         </a>

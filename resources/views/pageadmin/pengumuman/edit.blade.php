@@ -34,7 +34,7 @@
                                 <h5 class="mb-0 text-primary">Edit Pengumuman</h5>
                             </div>
                             <hr>
-                            <form action="{{ route('pengumuman.update', $pengumuman->id) }}" method="POST" class="row g-3"
+                            <form action="{{ route('master-pengumuman.update', $pengumuman->id) }}" method="POST" class="row g-3"
                                 enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')

@@ -34,7 +34,7 @@
                                 <h5 class="mb-0 text-primary">Tambah Pengumuman</h5>
                             </div>
                             <hr>
-                            <form action="{{ route('pengumuman.store') }}" method="POST" class="row g-3"
+                            <form action="{{ route('master-pengumuman.store') }}" method="POST" class="row g-3"
                                 enctype="multipart/form-data">
                                 @csrf
                                 <div class="col-md-12">

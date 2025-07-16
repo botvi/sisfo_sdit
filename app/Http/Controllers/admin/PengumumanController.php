@@ -28,16 +28,18 @@ class PengumumanController extends Controller
             'gambar_pengumuman' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
+        $data = $request->only(['nama_pengumuman', 'jenis_pengumuman', 'konten_pengumuman']);
+
         if ($request->hasFile('gambar_pengumuman')) {
             $gambar = $request->file('gambar_pengumuman');
-            $namaGambar = $gambar->hashName();
+            $namaGambar = time() . '_' . $gambar->getClientOriginalName();
             $gambar->move(public_path('pengumuman'), $namaGambar);
-            $request->merge(['gambar_pengumuman' => $namaGambar]);
+            $data['gambar_pengumuman'] = $namaGambar;
         }
 
-        Pengumuman::create($request->all());
+        Pengumuman::create($data);
         Alert::success('Sukses', 'Data pengumuman berhasil ditambahkan');
-        return redirect()->route('pengumuman.index');
+        return redirect()->route('master-pengumuman.index');
     }
 
     public function edit($id)
@@ -56,24 +58,34 @@ class PengumumanController extends Controller
         ]);
 
         $pengumuman = Pengumuman::findOrFail($id);
+        $data = $request->only(['nama_pengumuman', 'jenis_pengumuman', 'konten_pengumuman']);
 
         if ($request->hasFile('gambar_pengumuman')) {
+            // Hapus gambar lama jika ada
+            if ($pengumuman->gambar_pengumuman && file_exists(public_path('pengumuman/' . $pengumuman->gambar_pengumuman))) {
+                @unlink(public_path('pengumuman/' . $pengumuman->gambar_pengumuman));
+            }
             $gambar = $request->file('gambar_pengumuman');
-            $namaGambar = $gambar->hashName();
+            $namaGambar = time() . '_' . $gambar->getClientOriginalName();
             $gambar->move(public_path('pengumuman'), $namaGambar);
-            $request->merge(['gambar_pengumuman' => $namaGambar]);
+            $data['gambar_pengumuman'] = $namaGambar;
         }
-        $pengumuman->update($request->all());
+
+        $pengumuman->update($data);
         Alert::success('Sukses', 'Data pengumuman berhasil diubah');
-        return redirect()->route('pengumuman.index');
-        }
+        return redirect()->route('master-pengumuman.index');
+    }
 
     public function destroy($id)
     {
         $pengumuman = Pengumuman::findOrFail($id);
+        // Hapus file gambar jika ada
+        if ($pengumuman->gambar_pengumuman && file_exists(public_path('pengumuman/' . $pengumuman->gambar_pengumuman))) {
+            @unlink(public_path('pengumuman/' . $pengumuman->gambar_pengumuman));
+        }
         $pengumuman->delete();
         Alert::success('Sukses', 'Data pengumuman berhasil dihapus');
-        return redirect()->route('pengumuman.index');
+        return redirect()->route('master-pengumuman.index');
     }
 
     public function show($nama_pengumuman)

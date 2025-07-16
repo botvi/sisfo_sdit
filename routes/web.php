@@ -72,10 +72,10 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::resource('bendahara', BendaharaController::class);
     Route::resource('master-kelas', MasterKelasController::class);
     Route::resource('master-tahun-pelajaran', MasterTahunPelajaranController::class);
-    Route::resource('pengumuman', PengumumanController::class);
+    Route::resource('master-pengumuman', PengumumanController::class);
 
-    Route::get('pengumuman/share-facebook/{nama_pengumuman}', [PengumumanController::class, 'shareurltofacebook'])->name('pengumuman.shareurltofacebook');
-    Route::get('pengumuman/show/{nama_pengumuman}', [PengumumanController::class, 'show'])->name('pengumuman.show');
+    Route::get('master-pengumuman/share-facebook/{nama_pengumuman}', [PengumumanController::class, 'shareurltofacebook'])->name('master-pengumuman.shareurltofacebook');
+    Route::get('master-pengumuman/show/{nama_pengumuman}', [PengumumanController::class, 'show'])->name('master-pengumuman.show');
 
     Route::resource('wali-kelas', WaliKelasController::class);
     Route::resource('kepala-sekolah', KepalaSekolahController::class);

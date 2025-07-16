@@ -20,7 +20,7 @@
                 <hr />
                 <div class="card">
                     <div class="card-body">
-                        <a href="{{ route('pengumuman.create') }}" class="btn btn-primary mb-3">Tambah Data</a>
+                        <a href="{{ route('master-pengumuman.create') }}" class="btn btn-primary mb-3">Tambah Data</a>
                         <div class="table-responsive">
                             <table id="example2" class="table table-striped table-bordered">
                                 <thead>
@@ -43,7 +43,7 @@
                                             <td>{!! $data->konten_pengumuman !!}</td>
                                             <td><img src="{{ asset('pengumuman/' . $data->gambar_pengumuman) }}" alt="Gambar Pengumuman" width="100"></td>
                                             <td>
-                                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('pengumuman.show', $data->id)) }}&quote={{ urlencode($data->nama_pengumuman) }}"
+                                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('master-pengumuman.show', $data->id)) }}&quote={{ urlencode($data->nama_pengumuman) }}"
                                                     target="_blank" class="btn btn-sm btn-primary">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                         fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
@@ -52,11 +52,11 @@
                                                     </svg> Bagikan
                                                 </a>
 
-                                                <a href="{{ route('pengumuman.edit', $data->id) }}"
+                                                <a href="{{ route('master-pengumuman.edit', $data->id) }}"
                                                     class="btn btn-sm btn-warning">Edit</a>
-                                                <a href="{{ route('pengumuman.show', $data->nama_pengumuman) }}"
+                                                <a href="{{ route('master-pengumuman.show', $data->nama_pengumuman) }}"
                                                     class="btn btn-sm btn-info">Detail</a>
-                                                <form action="{{ route('pengumuman.destroy', $data->id) }}" method="POST"
+                                                <form action="{{ route('master-pengumuman.destroy', $data->id) }}" method="POST"
                                                     style="display:inline;" class="delete-form">
                                                     @csrf
                                                     @method('DELETE')

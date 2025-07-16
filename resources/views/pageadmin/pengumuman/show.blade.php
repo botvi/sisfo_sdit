@@ -10,7 +10,7 @@
     <meta name="keywords" content="pengumuman, event, berita, sistem informasi" />
     <meta name="author" content="SDIT LA TAHZAN" />
 
-    <meta property="og:url" content="{{ route('pengumuman.show', $pengumuman->id) }}" />
+    <meta property="og:url" content="{{ route('master-pengumuman.show', $pengumuman->id) }}" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="{{ $pengumuman->nama_pengumuman }}" />
     <meta property="og:description" content="{{ Str::limit(strip_tags($pengumuman->konten_pengumuman), 100) }}" />
