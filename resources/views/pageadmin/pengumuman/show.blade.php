@@ -1,7 +1,4 @@
-@php
-    preg_match('/<img.+src=[\'\"](?P<src>.+?)[\'\"].*>/i', $pengumuman->konten_pengumuman, $image);
-    $ogImage = isset($image['src']) ? $image['src'] : asset('env/logo_text.jpg');
-@endphp
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -12,17 +9,20 @@
     <meta name="description" content="Sistem Informasi SDIT LA TAHZAN - Lihat detail {{ $pengumuman->jenis_pengumuman }} terkini" />
     <meta name="keywords" content="pengumuman, event, berita, sistem informasi" />
     <meta name="author" content="SDIT LA TAHZAN" />
-    <meta property="og:image" content="{{ $ogImage }}" />
-    <meta property="og:title" content="{{ $pengumuman->nama_pengumuman }} - SDIT LA TAHZAN" />
-    <meta property="og:description" content="{{ Str::limit(strip_tags($pengumuman->konten_pengumuman), 10) }}" />
-    <meta property="og:url" content="{{ url()->current() }}" />
-    <meta property="og:site_name" content="SDIT LA TAHZAN" />
-    <meta name="twitter:image:src" content="{{ asset('env') }}/logo_text.png" />
+
+    <meta property="og:url" content="{{ route('pengumuman.show', $pengumuman->id) }}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="{{ $pengumuman->nama_pengumuman }}" />
+    <meta property="og:description" content="{{ Str::limit(strip_tags($pengumuman->konten_pengumuman), 100) }}" />
+    <meta property="og:image" content="{{ asset('pengumuman/' . $pengumuman->gambar_pengumuman) }}" />
+    
+
+    <meta name="twitter:image:src" content="{{ asset('pengumuman/' . $pengumuman->gambar_pengumuman) }}" />
     <meta name="twitter:site" content="@SDIT LA TAHZAN" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Detail {{ $pengumuman->jenis_pengumuman }} - SDIT LA TAHZAN" />
     <meta name="twitter:description" content="{{ Str::limit(strip_tags($pengumuman->konten_pengumuman), 10) }}" />
-    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYqLr2QpzmFyTPi1ieDFHeg_kKKsbidTQ1OQ&s" type="image/jpg"/>
+    <link rel="icon" href="{{ asset('pengumuman/' . $pengumuman->gambar_pengumuman) }}" type="image/jpg"/>
     <title>{{ $pengumuman->nama_pengumuman }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">

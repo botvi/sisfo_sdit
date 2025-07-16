@@ -70,7 +70,16 @@
                                         @endforeach
                                     </small>
                                 </div>
-
+                                <div class="col-md-12">
+                                    <label for="gambar_pengumuman" class="form-label">Gambar Pengumuman</label>
+                                    <input type="file" class="form-control" id="gambar_pengumuman" name="gambar_pengumuman"
+                                        accept="image/*">
+                                    <small class="text-danger">
+                                        @foreach ($errors->get('gambar_pengumuman') as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </small>
+                                </div>
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-primary px-5">Simpan</button>
                                 </div>

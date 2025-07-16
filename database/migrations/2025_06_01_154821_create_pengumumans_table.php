@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama_pengumuman');
             $table->string('jenis_pengumuman');
             $table->longText('konten_pengumuman');
+            $table->string('gambar_pengumuman')->nullable();
           
             $table->timestamps();
         });

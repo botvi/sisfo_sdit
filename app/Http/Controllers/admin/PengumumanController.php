@@ -25,7 +25,15 @@ class PengumumanController extends Controller
             'nama_pengumuman' => 'required|string|max:255',
             'jenis_pengumuman' => 'required|string',
             'konten_pengumuman' => 'required|string',
+            'gambar_pengumuman' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
+        if ($request->hasFile('gambar_pengumuman')) {
+            $gambar = $request->file('gambar_pengumuman');
+            $namaGambar = $gambar->hashName();
+            $gambar->move(public_path('pengumuman'), $namaGambar);
+            $request->merge(['gambar_pengumuman' => $namaGambar]);
+        }
 
         Pengumuman::create($request->all());
         Alert::success('Sukses', 'Data pengumuman berhasil ditambahkan');
@@ -44,9 +52,17 @@ class PengumumanController extends Controller
             'nama_pengumuman' => 'required|string|max:255',
             'jenis_pengumuman' => 'required|string',
             'konten_pengumuman' => 'required|string',
+            'gambar_pengumuman' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $pengumuman = Pengumuman::findOrFail($id);
+
+        if ($request->hasFile('gambar_pengumuman')) {
+            $gambar = $request->file('gambar_pengumuman');
+            $namaGambar = $gambar->hashName();
+            $gambar->move(public_path('pengumuman'), $namaGambar);
+            $request->merge(['gambar_pengumuman' => $namaGambar]);
+        }
         $pengumuman->update($request->all());
         Alert::success('Sukses', 'Data pengumuman berhasil diubah');
         return redirect()->route('pengumuman.index');

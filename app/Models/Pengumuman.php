@@ -9,5 +9,5 @@ class Pengumuman extends Model
 {
     use HasFactory;
     protected $table = 'pengumumans';
-    protected $fillable = ['nama_pengumuman', 'jenis_pengumuman', 'konten_pengumuman'];
+    protected $fillable = ['nama_pengumuman', 'jenis_pengumuman', 'konten_pengumuman', 'gambar_pengumuman'];
 }
