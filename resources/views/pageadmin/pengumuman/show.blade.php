@@ -9,7 +9,7 @@
     <meta name="keywords" content="pengumuman, event, berita, sistem informasi" />
     <meta name="author" content="SDIT LA TAHZAN" />
 	<link rel="icon" href="{{ asset('env') }}/logo_text.jpg" type="image/jpg"/>
-    <meta property="og:image" content="{{ $ogImage }}" />
+    <meta property="og:image" content="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYqLr2QpzmFyTPi1ieDFHeg_kKKsbidTQ1OQ&s" />
     <meta property="og:title" content="{{ $pengumuman->nama_pengumuman }} - SDIT LA TAHZAN" />
     <meta property="og:description" content="{{ Str::limit(strip_tags($pengumuman->konten_pengumuman), 10) }}" />
     <meta property="og:url" content="{{ url()->current() }}" />
