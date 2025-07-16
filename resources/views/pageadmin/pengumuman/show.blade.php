@@ -8,7 +8,6 @@
     <meta name="description" content="Sistem Informasi SDIT LA TAHZAN - Lihat detail {{ $pengumuman->jenis_pengumuman }} terkini" />
     <meta name="keywords" content="pengumuman, event, berita, sistem informasi" />
     <meta name="author" content="SDIT LA TAHZAN" />
-	<link rel="icon" href="{{ asset('env') }}/logo_text.jpg" type="image/jpg"/>
     <meta property="og:image" content="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYqLr2QpzmFyTPi1ieDFHeg_kKKsbidTQ1OQ&s" />
     <meta property="og:title" content="{{ $pengumuman->nama_pengumuman }} - SDIT LA TAHZAN" />
     <meta property="og:description" content="{{ Str::limit(strip_tags($pengumuman->konten_pengumuman), 10) }}" />
@@ -19,8 +18,8 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Detail {{ $pengumuman->jenis_pengumuman }} - SDIT LA TAHZAN" />
     <meta name="twitter:description" content="{{ Str::limit(strip_tags($pengumuman->konten_pengumuman), 10) }}" />
-    
-    <title>Detail {{ $pengumuman->jenis_pengumuman }} - SDIT LA TAHZAN</title>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYqLr2QpzmFyTPi1ieDFHeg_kKKsbidTQ1OQ&s" type="image/jpg"/>
+    <title>{{ $pengumuman->nama_pengumuman }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
