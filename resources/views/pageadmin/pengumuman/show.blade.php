@@ -1,3 +1,7 @@
+@php
+    preg_match('/<img.+src=[\'\"](?P<src>.+?)[\'\"].*>/i', $pengumuman->konten_pengumuman, $image);
+    $ogImage = isset($image['src']) ? $image['src'] : asset('env/logo_text.jpg');
+@endphp
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -8,7 +12,7 @@
     <meta name="description" content="Sistem Informasi SDIT LA TAHZAN - Lihat detail {{ $pengumuman->jenis_pengumuman }} terkini" />
     <meta name="keywords" content="pengumuman, event, berita, sistem informasi" />
     <meta name="author" content="SDIT LA TAHZAN" />
-    <meta property="og:image" content="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYqLr2QpzmFyTPi1ieDFHeg_kKKsbidTQ1OQ&s" />
+    <meta property="og:image" content="{{ $ogImage }}" />
     <meta property="og:title" content="{{ $pengumuman->nama_pengumuman }} - SDIT LA TAHZAN" />
     <meta property="og:description" content="{{ Str::limit(strip_tags($pengumuman->konten_pengumuman), 10) }}" />
     <meta property="og:url" content="{{ url()->current() }}" />
@@ -69,12 +73,7 @@
                             <div class="mb-4" style="text-align: justify; line-height: 1.6;">
                                 {!! $pengumuman->konten_pengumuman !!}
                             </div>
-                            <!-- Tombol Share Facebook -->
-                            <div class="mb-4 text-center">
-                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}" target="_blank" class="btn btn-primary">
-                                    <i class="fab fa-facebook"></i> Bagikan ke Facebook
-                                </a>
-                            </div>
+                          
                         </div>
                     </div>
                 </div>
