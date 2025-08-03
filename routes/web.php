@@ -74,9 +74,6 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::resource('master-tahun-pelajaran', MasterTahunPelajaranController::class);
     Route::resource('master-pengumuman', PengumumanController::class);
 
-    Route::get('master-pengumuman/share-facebook/{nama_pengumuman}', [PengumumanController::class, 'shareurltofacebook'])->name('master-pengumuman.shareurltofacebook');
-    Route::get('master-pengumuman/show/{nama_pengumuman}', [PengumumanController::class, 'show'])->name('master-pengumuman.show');
-
     Route::resource('wali-kelas', WaliKelasController::class);
     Route::resource('kepala-sekolah', KepalaSekolahController::class);
     Route::get('whatsapp-api', [WhatsappApiController::class, 'index'])->name('whatsapp-api.index');
@@ -117,3 +114,6 @@ Route::group(['middleware' => ['role:admin,kepala_sekolah']], function () {
     Route::get('/laporan-admin/hafalan', [LaporanController::class, 'laporanhafalan'])->name('laporan-admin.hafalan');
     Route::get('/laporan-admin/hafalan/print', [LaporanController::class, 'printLaporanHafalan'])->name('laporan-admin.hafalan.print');
 });
+
+// Route detail pengumuman publik (tanpa login)
+Route::get('/pengumuman/{id}', [PengumumanController::class, 'show'])->name('pengumuman.show');

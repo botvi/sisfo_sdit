@@ -88,9 +88,9 @@ class PengumumanController extends Controller
         return redirect()->route('master-pengumuman.index');
     }
 
-    public function show($nama_pengumuman)
+    public function show($id)
     {
-        $pengumuman = Pengumuman::where('nama_pengumuman', $nama_pengumuman)->firstOrFail();
+        $pengumuman = Pengumuman::findOrFail($id);
         return view('pageadmin.pengumuman.show', compact('pengumuman'));
     }
 
