@@ -10,6 +10,7 @@ use App\Models\Bendahara;
 use App\Models\MasterKelas;
 use App\Models\User;
 use App\Models\HafalanTahfiz;
+use App\Models\KepalaSekolah;
 use Illuminate\Http\Request;
 
 class LaporanController extends Controller
@@ -25,6 +26,11 @@ class LaporanController extends Controller
             $query->whereHas('siswa', function ($q) use ($request) {
                 $q->where('master_kelas_id', $request->master_kelas_id);
             });
+        }
+
+        // Filter berdasarkan tahun created_at
+        if ($request->has('tahun') && $request->tahun != '') {
+            $query->whereYear('created_at', $request->tahun);
         }
 
         $sppSiswa = $query->orderBy('tanggal_bayar', 'desc')->get();
@@ -44,6 +50,11 @@ class LaporanController extends Controller
             });
         }
 
+        // Filter berdasarkan tahun created_at
+        if ($request->has('tahun') && $request->tahun != '') {
+            $query->whereYear('created_at', $request->tahun);
+        }
+
         $sppSiswa = $query->orderBy('tanggal_bayar', 'desc')->get();
 
         return view('pagelaporan.laporanpembayaranspp.print', compact('sppSiswa', 'kelas', 'bendahara'));
@@ -59,6 +70,11 @@ class LaporanController extends Controller
             $query->where('master_kelas_id', $request->master_kelas_id);
         }
 
+        // Filter berdasarkan tahun created_at
+        if ($request->has('tahun') && $request->tahun != '') {
+            $query->whereYear('created_at', $request->tahun);
+        }
+
         $siswa = $query->get();
 
         return view('pagelaporan.laporandataorangtuadansiswa.index', compact('siswa', 'kelas'));
@@ -71,6 +87,11 @@ class LaporanController extends Controller
 
         if ($request->has('master_kelas_id') && $request->master_kelas_id != '') {
             $query->where('master_kelas_id', $request->master_kelas_id);
+        }
+
+        // Filter berdasarkan tahun created_at
+        if ($request->has('tahun') && $request->tahun != '') {
+            $query->whereYear('created_at', $request->tahun);
         }
 
         $siswa = $query->get();
@@ -90,13 +111,18 @@ class LaporanController extends Controller
             });
         }
 
+        // Filter berdasarkan tahun created_at
+        if ($request->has('tahun') && $request->tahun != '') {
+            $query->whereYear('created_at', $request->tahun);
+        }
+
         $data = $query->get();
         return view('pagelaporan.laporanhafalan.index', compact('data', 'kelas'));
     }
 
     public function printLaporanHafalan(Request $request)
     {
-        $kepalaSekolah = User::where('role', 'kepala_sekolah')->first();
+        $kepalaSekolah = KepalaSekolah::where('status', 'aktif')->first();
         $kelas = MasterKelas::with('waliKelas')->get();
         
         $query = HafalanTahfiz::with(['siswa.masterKelas']);
@@ -105,6 +131,11 @@ class LaporanController extends Controller
             $query->whereHas('siswa', function ($q) use ($request) {
                 $q->where('master_kelas_id', $request->master_kelas_id);
             });
+        }
+
+        // Filter berdasarkan tahun created_at
+        if ($request->has('tahun') && $request->tahun != '') {
+            $query->whereYear('created_at', $request->tahun);
         }
 
         $data = $query->get();

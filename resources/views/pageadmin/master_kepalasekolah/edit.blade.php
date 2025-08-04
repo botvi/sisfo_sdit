@@ -28,6 +28,14 @@
                                 <h5 class="mb-0 text-primary">Edit Kepala Sekolah</h5>
                             </div>
                             <hr>
+                            
+                            <!-- Informasi tentang hanya satu kepala sekolah aktif -->
+                            <div class="alert alert-info" role="alert">
+                                <i class="bx bx-info-circle me-2"></i>
+                                <strong>Informasi:</strong> Hanya satu kepala sekolah yang dapat aktif pada satu waktu. 
+                                Jika Anda mengubah status menjadi "Aktif", kepala sekolah lain akan otomatis dinonaktifkan.
+                            </div>
+                            
                             <form action="{{ route('kepala-sekolah.update', $kepalaSekolah->id) }}" method="POST" class="row g-3" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
@@ -96,6 +104,19 @@
                                         @endforeach
                                     </small>
                                 </div>
+                                <div class="col-md-12">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select class="form-select" id="status" name="status" required>
+                                        <option value="">Pilih Status</option>
+                                        <option value="aktif" {{ old('status', $kepalaSekolah->status) === 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                        <option value="nonaktif" {{ old('status', $kepalaSekolah->status) === 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                                    </select>
+                                    <small class="text-danger">
+                                        @foreach ($errors->get('status') as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </small>
+                                </div>
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-primary px-5">Update</button>
                                 </div>
@@ -107,4 +128,24 @@
         </div>
     </div>
 
+@endsection
+
+@section('script')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect = document.getElementById('status');
+    const currentStatus = '{{ $kepalaSekolah->status }}';
+    
+    statusSelect.addEventListener('change', function() {
+        if (this.value === 'aktif' && currentStatus !== 'aktif') {
+            if (confirm('Anda memilih status "Aktif". Kepala sekolah lain akan otomatis dinonaktifkan. Lanjutkan?')) {
+                // User mengkonfirmasi
+            } else {
+                // User membatalkan, kembalikan ke status sebelumnya
+                this.value = currentStatus;
+            }
+        }
+    });
+});
+</script>
 @endsection

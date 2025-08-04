@@ -20,7 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link href="{{ asset('admin') }}/assets/css/app.css" rel="stylesheet">
     <link href="{{ asset('admin') }}/assets/css/icons.css" rel="stylesheet">
-    <title>Login - SDIT LA TAHZAN</title>
+            <title>Login - PONDOK PESANTREN MARKAZUL QUR'AN WASSUNAH</title>
     <style>
         
         .section-authentication-signin {
@@ -48,7 +48,7 @@
                             <div class="card-body">
                                 <div class="border p-4 rounded">
                                     <div class="text-center">
-                                        <img src="{{ asset('env') }}/logo_text.jpg" width="300" alt="Logo SDIT LA TAHZAN"
+                                        <img src="{{ asset('env') }}/logo_text.jpg" width="300" alt="Logo PONDOK PESANTREN MARKAZUL QUR'AN WASSUNAH"
                                             class="img-fluid">
                                     </div>
                                     <div class="login-separater text-center mb-4">

@@ -39,12 +39,12 @@
 <body>
     <div class="kop">
         <h4>DATA ORANG TUA DAN SISWA <br>
-        SDIT LA TAHZAN GUNUNG TOAR</h4>
+        PONDOK PESANTREN MARKAZUL QUR'AN WASSUNAH</h4>
     </div>
     <div class="header">
         @if(request('master_kelas_id'))
-            <p>Kelas: {{ $kelas->where('id', request('master_kelas_id'))->first()->kelas }}</p>
-            <p>Wali Kelas: {{ $siswa->first()->masterKelas->waliKelas->nama_wali_kelas }}</p>
+            <p>Kelas: {{ $kelas->where('id', request('master_kelas_id'))->first() ? $kelas->where('id', request('master_kelas_id'))->first()->kelas : '-' }}</p>
+            <p>Wali Kelas: {{ $siswa->first() ? $siswa->first()->masterKelas->waliKelas->nama_wali_kelas : '-' }}</p>
             <p>Tahun: {{ date('Y') }}</p>
         @endif
     </div>
@@ -82,7 +82,7 @@
             <td style="text-align: right; padding-top: 20px;">
                 <p>Gunung Toar, {{ date('d-m-Y') }}</p>
                 <br><br><br>
-                <p>{{ $siswa->first()->masterKelas->waliKelas->nama_wali_kelas }}</p>
+                <p>{{ $siswa->first() ? $siswa->first()->masterKelas->waliKelas->nama_wali_kelas : '-' }}</p>
             </td>
         </tr>
     </table>

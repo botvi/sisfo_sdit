@@ -18,6 +18,46 @@
             <!--breadcrumb-->
             <h6 class="mb-0 text-uppercase">Data Kepala Sekolah</h6>
             <hr/>
+            
+            <!-- Informasi Kepala Sekolah Aktif -->
+            @if($activeKepalaSekolah)
+            <div class="alert alert-success" role="alert">
+                <strong>Kepala Sekolah Aktif:</strong> {{ $activeKepalaSekolah->nama_kepala_sekolah }} ({{ $activeKepalaSekolah->nuptk }})
+            </div>
+            @else
+            <div class="alert alert-warning" role="alert">
+                <strong>Peringatan:</strong> Tidak ada kepala sekolah yang aktif saat ini.
+            </div>
+            @endif
+            
+            <!-- Statistik -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Kepala Sekolah</h5>
+                            <h3 class="mb-0">{{ $kepalaSekolah->count() }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Aktif</h5>
+                            <h3 class="mb-0">{{ $kepalaSekolah->where('status', 'aktif')->count() }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-secondary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Nonaktif</h5>
+                            <h3 class="mb-0">{{ $kepalaSekolah->where('status', 'nonaktif')->count() }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="card">
                 <div class="card-body">
                         <a href="{{ route('kepala-sekolah.create') }}" class="btn btn-primary mb-3">Tambah Data</a>
@@ -31,6 +71,7 @@
                                     <th>NIP</th>
                                     <th>Username</th>
                                     <th>Email</th>
+                                    <th>Status</th>
                                     <th>Aksi</th>
                                 
                                 </tr>
@@ -45,7 +86,20 @@
                                     <td>{{ $kepalaSekolah->user->username }}</td>
                                     <td>{{ $kepalaSekolah->user->email }}</td>
                                     <td>
+                                        @if($kepalaSekolah->status === 'aktif')
+                                            <span class="badge bg-success">Aktif</span>
+                                        @else
+                                            <span class="badge bg-secondary">Nonaktif</span>
+                                        @endif
+                                    </td>
+                                    <td>
                                         <a href="{{ route('kepala-sekolah.edit', $kepalaSekolah->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                        @if($kepalaSekolah->status !== 'aktif')
+                                            <form action="{{ route('kepala-sekolah.activate', $kepalaSekolah->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-success">Aktifkan</button>
+                                            </form>
+                                        @endif
                                         <form action="{{ route('kepala-sekolah.destroy', $kepalaSekolah->id) }}" method="POST" style="display:inline;" class="delete-form">
                                             @csrf
                                             @method('DELETE')
@@ -63,6 +117,7 @@
                                     <th>NIP</th>
                                     <th>Username</th>
                                     <th>Email</th>
+                                    <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
                             </tfoot>
@@ -78,6 +133,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Konfirmasi untuk menghapus
             document.querySelectorAll('.delete-form').forEach(form => {
                 form.addEventListener('submit', function (e) {
                     e.preventDefault();
@@ -90,6 +146,28 @@
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
                         confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            // Konfirmasi untuk mengaktifkan kepala sekolah
+            document.querySelectorAll('form[action*="/activate"]').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    
+                    Swal.fire({
+                        title: 'Aktifkan Kepala Sekolah?',
+                        text: "Kepala sekolah lain akan otomatis dinonaktifkan. Lanjutkan?",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#28a745',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, aktifkan!',
                         cancelButtonText: 'Batal'
                     }).then((result) => {
                         if (result.isConfirmed) {

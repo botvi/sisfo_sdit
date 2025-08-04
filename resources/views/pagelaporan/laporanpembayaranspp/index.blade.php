@@ -21,6 +21,17 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Filter Tahun</label>
+                            <select name="tahun" class="form-select">
+                                <option value="">Semua Tahun</option>
+                                @for($year = date('Y'); $year >= 2020; $year--)
+                                    <option value="{{ $year }}" {{ request('tahun') == $year ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
                         <div class="col-md-2">
                             <label class="form-label">&nbsp;</label>
                             <button type="submit" class="btn btn-primary d-block">Filter</button>

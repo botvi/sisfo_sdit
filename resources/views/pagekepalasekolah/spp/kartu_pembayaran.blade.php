@@ -63,7 +63,7 @@
 <body>
     <div class="header">
         <h3>KARTU PEMBAYARAN</h3>
-        <h3>SDIT LA TAHZAN GUNUNG TOAR</h3>
+                        <h3>PONDOK PESANTREN MARKAZUL QUR'AN WASSUNAH</h3>
         <h3>TP. {{ $spp->tahunPelajaran->tahun_pelajaran }}</h3>
     </div>
 

@@ -5,7 +5,7 @@
         <div class="page-content">
             <div class="row justify-content-center">
                 <div class="col-md-8 col-lg-6 text-center mb-4">
-                    <h1>SDIT LA TAHZAN</h1>
+                    <h1>PONDOK PESANTREN MARKAZUL QUR'AN WASSUNAH</h1>
                     <p class="mt-3">
                         <span class="text-muted">Sistem Informasi Sekolah Dasar Terintegrasi Media Sosial adalah platform
                             yang dirancang untuk memudahkan pengelolaan informasi sekolah dan interaksi dengan komunitas

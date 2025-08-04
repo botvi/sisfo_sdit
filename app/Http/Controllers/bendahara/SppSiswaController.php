@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
 use App\Models\MasterKelas;
 use App\Models\User;
+use App\Models\KepalaSekolah;
 
 
 class SppSiswaController extends Controller
@@ -180,7 +181,7 @@ class SppSiswaController extends Controller
             if ($target) {
                 $token = WhatsappApi::first()->access_token;
                 $statusText = $request->status_bayar === 'lunas' ? 'Lunas' : 'Belum lunas';
-                $message = "Assalamu'alaikum Wr. Wb.\n\nSaya selaku Bendahara SDIT\n\nAnak Bapak/Ibu {$siswa->nama_anak}, {$statusText} melakukan pembayaran SPP untuk bulan {$request->bulan_bayar}.\nJumlah: Rp {$request->jumlah_bayar}\nTanggal: {$request->tanggal_bayar}\n\nTerima kasih.";
+                $message = "Assalamu'alaikum Wr. Wb.\n\nSaya selaku Bendahara PONDOK PESANTREN MARKAZUL QUR'AN WASSUNAH\n\nAnak Bapak/Ibu {$siswa->nama_anak}, {$statusText} melakukan pembayaran SPP untuk bulan {$request->bulan_bayar}.\nJumlah: Rp {$request->jumlah_bayar}\nTanggal: {$request->tanggal_bayar}\n\nTerima kasih.";
 
                 Http::withoutVerifying()->get('https://api.fonnte.com/send', [
                     'token' => $token,
@@ -238,7 +239,7 @@ class SppSiswaController extends Controller
                 $target = $siswa->orangTuaWali->no_wa_ortu ?? $siswa->orangTuaWali->no_wa_wali;
 
                 if ($target) {
-                    $message = "Assalamu'alaikum Wr. Wb.\n\nSaya selaku Bendahara SDIT\n\nMohon maaf sebelumnya, kami ingin mengingatkan bahwa pembayaran SPP untuk anak Bapak/Ibu {$siswa->nama_anak} untuk bulan {$bulan} tahun pelajaran {$tahunPelajaran->tahun_pelajaran} belum dilakukan.\n\nMohon segera melakukan pembayaran untuk menghindari keterlambatan.\n\nTerima kasih atas perhatiannya.\n\nJika sudah melakukan pembayaran harap abaikan pesan ini.";
+                    $message = "Assalamu'alaikum Wr. Wb.\n\nSaya selaku Bendahara PONDOK PESANTREN MARKAZUL QUR'AN WASSUNAH\n\nMohon maaf sebelumnya, kami ingin mengingatkan bahwa pembayaran SPP untuk anak Bapak/Ibu {$siswa->nama_anak} untuk bulan {$bulan} tahun pelajaran {$tahunPelajaran->tahun_pelajaran} belum dilakukan.\n\nMohon segera melakukan pembayaran untuk menghindari keterlambatan.\n\nTerima kasih atas perhatiannya.\n\nJika sudah melakukan pembayaran harap abaikan pesan ini.";
 
                     try {
                         $response = Http::withoutVerifying()->get('https://api.fonnte.com/send', [
@@ -307,7 +308,7 @@ class SppSiswaController extends Controller
         // Decode URL parameter
         $nama_anak = urldecode($nama_anak);
         $siswa = Siswa::where('nama_anak', $nama_anak)->with('masterKelas')->first();
-        $kepalaSekolah = User::where('role', 'kepala_sekolah')->first();
+        $kepalaSekolah = KepalaSekolah::where('status', 'aktif')->first();
         $bendahara = User::where('role', 'bendahara')->first();
         if (!$siswa) {
             Alert::error('Error', 'Data siswa tidak ditemukan');

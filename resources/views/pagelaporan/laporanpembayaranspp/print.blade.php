@@ -39,12 +39,12 @@
 <body>
     <div class="kop">
         <h4>PEMBAYARAN SPP SISWA <br>
-        SDIT LA TAHZAN GUNUNG TOAR <br>
-        TAHUN PELAJARAN {{ $sppSiswa->first()->tahunPelajaran->tahun_pelajaran }}</h4>
+        PONDOK PESANTREN MARKAZUL QUR'AN WASSUNAH <br>
+        TAHUN PELAJARAN {{ $sppSiswa->first() ? $sppSiswa->first()->tahunPelajaran->tahun_pelajaran : 'Tidak ada data' }}</h4>
     </div>
     <div class="header">
         @if(request('master_kelas_id'))
-            <p>Kelas: {{ $kelas->where('id', request('master_kelas_id'))->first()->kelas }}</p>
+            <p>Kelas: {{ $kelas->where('id', request('master_kelas_id'))->first() ? $kelas->where('id', request('master_kelas_id'))->first()->kelas : '-' }}</p>
         @endif
     </div>
 
@@ -83,7 +83,7 @@
             <td style=" padding-top: 20px;">
                 <p>Mengetahui, <br> Wali Kelas</p>
                 <br><br><br>
-                <p>{{ $sppSiswa->first()->siswa->masterKelas->waliKelas->nama_wali_kelas }}</p>
+                <p>{{ $sppSiswa->first() ? $sppSiswa->first()->siswa->masterKelas->waliKelas->nama_wali_kelas : 'Tidak ada data' }}</p>
             </td>
             <td style="text-align: right; padding-top: 20px;">
                 <p>Bendahara</p>

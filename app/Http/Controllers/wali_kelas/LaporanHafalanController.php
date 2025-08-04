@@ -23,6 +23,12 @@ class LaporanHafalanController extends Controller
                 $query->where('wali_kelas_id', $waliKelas->id);
             });
 
+        // Filter berdasarkan tahun created_at
+        if ($request->filled('tahun')) {
+            $tahun = $request->tahun;
+            $query->whereYear('created_at', $tahun);
+        }
+
         // Pencarian berdasarkan nama siswa atau keterangan
         if ($request->filled('search')) {
             $search = $request->search;
@@ -36,7 +42,15 @@ class LaporanHafalanController extends Controller
         $data = $query->get();
         $groupedData = $data->groupBy('siswa_id');
         
-        return view('pagewalikelas.laporan_hafalan.index', compact('data', 'waliKelas', 'groupedData'));
+        // Mendapatkan daftar tahun yang tersedia untuk filter
+        $tahunList = HafalanTahfiz::whereHas('siswa.masterKelas', function ($query) use ($waliKelas) {
+            $query->where('wali_kelas_id', $waliKelas->id);
+        })->selectRaw('YEAR(created_at) as tahun')
+          ->distinct()
+          ->orderBy('tahun', 'desc')
+          ->pluck('tahun');
+        
+        return view('pagewalikelas.laporan_hafalan.index', compact('data', 'waliKelas', 'groupedData', 'tahunList'));
     }
 
     public function printLaporanHafalan(Request $request)
@@ -47,6 +61,12 @@ class LaporanHafalanController extends Controller
             ->whereHas('siswa.masterKelas', function ($query) use ($waliKelas) {
                 $query->where('wali_kelas_id', $waliKelas->id);
             });
+
+        // Filter berdasarkan tahun created_at
+        if ($request->filled('tahun')) {
+            $tahun = $request->tahun;
+            $query->whereYear('created_at', $tahun);
+        }
 
         // Pencarian berdasarkan nama siswa atau keterangan
         if ($request->filled('search')) {

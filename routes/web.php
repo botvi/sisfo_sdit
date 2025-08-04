@@ -76,6 +76,13 @@ Route::group(['middleware' => ['role:admin']], function () {
 
     Route::resource('wali-kelas', WaliKelasController::class);
     Route::resource('kepala-sekolah', KepalaSekolahController::class);
+    Route::post('kepala-sekolah/{id}/activate', [KepalaSekolahController::class, 'activate'])->name('kepala-sekolah.activate');
+    Route::get('kepala-sekolah/active', [KepalaSekolahController::class, 'getActiveKepalaSekolah'])->name('kepala-sekolah.active');
+    Route::get('kepala-sekolah/stats', [KepalaSekolahController::class, 'getKepalaSekolahStats'])->name('kepala-sekolah.stats');
+    Route::get('kepala-sekolah/status/{status}', [KepalaSekolahController::class, 'getKepalaSekolahByStatus'])->name('kepala-sekolah.by-status');
+    Route::get('kepala-sekolah/inactive', [KepalaSekolahController::class, 'getInactiveKepalaSekolah'])->name('kepala-sekolah.inactive');
+    Route::get('kepala-sekolah/active-list', [KepalaSekolahController::class, 'getActiveKepalaSekolahList'])->name('kepala-sekolah.active-list');
+    Route::get('kepala-sekolah/inactive-list', [KepalaSekolahController::class, 'getInactiveKepalaSekolahList'])->name('kepala-sekolah.inactive-list');
     Route::get('whatsapp-api', [WhatsappApiController::class, 'index'])->name('whatsapp-api.index');
     Route::post('whatsapp-api', [WhatsappApiController::class, 'storeorupdate'])->name('whatsapp-api.storeorupdate');
 });

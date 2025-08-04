@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nama_kepala_sekolah');
             $table->string('nuptk');
             $table->string('nip');
+            $table->string('status');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');

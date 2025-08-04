@@ -39,7 +39,7 @@
 <body>
     <div class="kop">
         <h4>LAPORAN HAFAALAN TAHFIZ <br>
-        SDIT LA TAHZAN GUNUNG TOAR</h4>
+        PONDOK PESANTREN MARKAZUL QUR'AN WASSUNAH</h4>
     </div>
     <div class="header">
         <p>Kepala Sekolah : {{ $kepalaSekolah->nama ?? '-' }}</p>
@@ -77,7 +77,7 @@
             <td style="text-align: right; padding-top: 20px;">
                 <p>Gunung Toar, {{ date('d-m-Y') }}</p>
                 <br><br><br>
-                <p>{{ $kepalaSekolah->nama ?? '-' }}</p>
+                <p>{{ $kepalaSekolah->nama_kepala_sekolah ?? '-' }}</p>
             </td>
         </tr>
     </table>

@@ -12,26 +12,49 @@
                     <!-- Form Pencarian -->
                     <form method="GET" action="{{ route('laporan.hafalan') }}" class="mb-3">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="input-group">
                                     <input type="text" name="search" class="form-control" placeholder="Cari nama siswa ..." value="{{ request('search') }}">
                                     <button class="btn btn-primary" type="submit">
                                         <i class="bx bx-search"></i> Cari
                                     </button>
-                                    @if(request('search'))
-                                        <a href="{{ route('laporan.hafalan') }}" class="btn btn-secondary">
-                                            <i class="bx bx-x"></i> Reset
-                                        </a>
-                                    @endif
                                 </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="tahun" class="form-select">
+                                    <option value="">Semua Tahun</option>
+                                    @foreach($tahunList as $tahun)
+                                        <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>
+                                            {{ $tahun }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="bx bx-filter"></i> Filter
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                @if(request('search') || request('tahun'))
+                                    <a href="{{ route('laporan.hafalan') }}" class="btn btn-secondary">
+                                        <i class="bx bx-x"></i> Reset
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </form>
 
-                    @if(request('search'))
+                    @if(request('search') || request('tahun'))
                         <div class="alert alert-info">
                             <i class="bx bx-info-circle"></i> 
-                            Menampilkan {{ $groupedData->count() }} siswa dengan total {{ $data->count() }} hafalan untuk pencarian "{{ request('search') }}"
+                            @if(request('search') && request('tahun'))
+                                Menampilkan {{ $groupedData->count() }} siswa dengan total {{ $data->count() }} hafalan untuk pencarian "{{ request('search') }}" pada tahun {{ request('tahun') }}
+                            @elseif(request('search'))
+                                Menampilkan {{ $groupedData->count() }} siswa dengan total {{ $data->count() }} hafalan untuk pencarian "{{ request('search') }}"
+                            @elseif(request('tahun'))
+                                Menampilkan {{ $groupedData->count() }} siswa dengan total {{ $data->count() }} hafalan pada tahun {{ request('tahun') }}
+                            @endif
                         </div>
                     @else
                         @php
@@ -47,7 +70,7 @@
                         @php
                             $topStudent = $groupedData->map(function($group) {
                                 return [
-                                    'nama' => $group->first()->siswa->nama_anak,
+                                    'nama' => $group->first() ? $group->first()->siswa->nama_anak : 'Tidak ada data',
                                     'count' => $group->count()
                                 ];
                             })->sortByDesc('count')->first();
@@ -58,7 +81,7 @@
                         </div>
                     @endif
 
-                    <a href="{{ route('laporan.hafalan.print') }}?search={{ request('search') }}" class="btn btn-success btn d-inline-block mb-3" style="width: auto; padding: 2px 12px; font-size: 0.85rem;">Print Semua</a>
+                    <a href="{{ route('laporan.hafalan.print') }}?search={{ request('search') }}&tahun={{ request('tahun') }}" class="btn btn-success btn d-inline-block mb-3" style="width: auto; padding: 2px 12px; font-size: 0.85rem;">Print Semua</a>
                     
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered">
@@ -66,9 +89,9 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Nama Siswa</th>
-                                                                            <th>Jumlah Hafalan</th>
-                                        <th>Tanggal Terakhir</th>
-                                        <th>Keterangan & Progress</th>
+                                    <th>Jumlah Hafalan</th>
+                                    <th>Tanggal Terakhir</th>
+                                    <th>Keterangan & Progress</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -79,13 +102,13 @@
                                 @endphp
                                 @forelse($groupedData as $siswaId => $hafalanGroup)
                                     @php
-                                        $siswa = $hafalanGroup->first()->siswa;
+                                        $siswa = $hafalanGroup->first() ? $hafalanGroup->first()->siswa : null;
                                         $jumlahHafalan = $hafalanGroup->count();
                                         $hafalanTerakhir = $hafalanGroup->sortByDesc('tanggal_hafalan')->first();
                                     @endphp
                                     <tr>
                                         <td>{{ $no++ }}</td>
-                                        <td>{{ $siswa->nama_anak }}</td>
+                                        <td>{{ $siswa ? $siswa->nama_anak : 'Tidak ada data' }}</td>
                                         <td>
                                             @php
                                                 $progressColor = $jumlahHafalan >= 10 ? 'success' : ($jumlahHafalan >= 5 ? 'info' : ($jumlahHafalan >= 3 ? 'warning' : 'danger'));
@@ -129,14 +152,14 @@
     <!-- Modal Detail Hafalan -->
     @foreach($groupedData as $siswaId => $hafalanGroup)
         @php
-            $siswa = $hafalanGroup->first()->siswa;
+            $siswa = $hafalanGroup->first() ? $hafalanGroup->first()->siswa : null;
             $hafalanSorted = $hafalanGroup->sortBy('tanggal_hafalan');
         @endphp
         <div class="modal fade" id="detailModal{{ $siswaId }}" tabindex="-1" aria-labelledby="detailModalLabel{{ $siswaId }}" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="detailModalLabel{{ $siswaId }}">Detail Hafalan - {{ $siswa->nama_anak }}</h5>
+                        <h5 class="modal-title" id="detailModalLabel{{ $siswaId }}">Detail Hafalan - {{ $siswa ? $siswa->nama_anak : 'Tidak ada data' }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -146,10 +169,10 @@
                                 <strong>Total Hafalan:</strong> {{ $hafalanGroup->count() }} kali
                             </div>
                             <div class="col-md-6">
-                                <strong>Tanggal Pertama:</strong> {{ $hafalanSorted->first()->tanggal_hafalan }}<br>
-                                <strong>Tanggal Terakhir:</strong> {{ $hafalanSorted->last()->tanggal_hafalan }}
+                                <strong>Tanggal Pertama:</strong> {{ $hafalanSorted->first() ? $hafalanSorted->first()->tanggal_hafalan : '-' }}<br>
+                                <strong>Tanggal Terakhir:</strong> {{ $hafalanSorted->last() ? $hafalanSorted->last()->tanggal_hafalan : '-' }}
                                 @php
-                                    $totalDays = max(1, (strtotime($hafalanSorted->last()->tanggal_hafalan) - strtotime($hafalanSorted->first()->tanggal_hafalan)) / (24 * 60 * 60));
+                                    $totalDays = $hafalanSorted->count() > 1 && $hafalanSorted->last() && $hafalanSorted->first() ? max(1, (strtotime($hafalanSorted->last()->tanggal_hafalan) - strtotime($hafalanSorted->first()->tanggal_hafalan)) / (24 * 60 * 60)) : 1;
                                     $frequency = $totalDays > 0 ? round($totalDays / $hafalanGroup->count(), 1) : 0;
                                 @endphp
                                 <br><strong>Frekuensi:</strong> {{ $frequency }} hari sekali

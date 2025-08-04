@@ -66,16 +66,24 @@
 <body>
     <div class="kop">
         <h4>LAPORAN HAFAALAN TAHFIZ <br>
-        SDIT LA TAHZAN GUNUNG TOAR</h4>
+        PONDOK PESANTREN MARKAZUL QUR'AN WASSUNAH</h4>
     </div>
     <div class="header">
         <p>Wali Kelas: {{ $waliKelas->nama_wali_kelas }}</p>
-        <p>Kelas: {{ $groupedData->first()->first()->siswa->masterKelas->kelas ?? '-' }}</p>
+        <p>Kelas: {{ $groupedData->first() && $groupedData->first()->first() ? $groupedData->first()->first()->siswa->masterKelas->kelas : '-' }}</p>
         <p>Tahun: {{ date('Y') }}</p>
         
-        @if(request('search'))
+        @if(request('search') || request('tahun'))
             <div class="search-info">
-                <strong>Hasil Pencarian:</strong> "{{ request('search') }}"
+                <strong>Filter yang diterapkan:</strong><br>
+                @if(request('search') && request('tahun'))
+                    • Pencarian: "{{ request('search') }}"<br>
+                    • Tahun: {{ request('tahun') }}
+                @elseif(request('search'))
+                    • Pencarian: "{{ request('search') }}"
+                @elseif(request('tahun'))
+                    • Tahun: {{ request('tahun') }}
+                @endif
             </div>
         @endif
         
@@ -86,7 +94,7 @@
                 $avgHafalan = $groupedData->count() > 0 ? round($groupedData->flatten()->count() / $groupedData->count(), 1) : 0;
                 $topStudent = $groupedData->map(function($group) {
                     return [
-                        'nama' => $group->first()->siswa->nama_anak,
+                        'nama' => $group->first() ? $group->first()->siswa->nama_anak : 'Tidak ada data',
                         'count' => $group->count()
                     ];
                 })->sortByDesc('count')->first();
@@ -99,15 +107,15 @@
     @php $no = 1; @endphp
     @foreach($groupedData as $siswaId => $hafalanGroup)
         @php
-            $siswa = $hafalanGroup->first()->siswa;
+            $siswa = $hafalanGroup->first() ? $hafalanGroup->first()->siswa : null;
             $hafalanSorted = $hafalanGroup->sortBy('tanggal_hafalan');
         @endphp
         <div class="student-section">
             <div class="student-header">
-                <h5>{{ $no++ }}. {{ $siswa->nama_anak }}</h5>
+                <h5>{{ $no++ }}. {{ $siswa ? $siswa->nama_anak : 'Tidak ada data' }}</h5>
                 <p>Total Hafalan: {{ $hafalanGroup->count() }} kali</p>
                 @php
-                    $totalDays = max(1, (strtotime($hafalanSorted->last()->tanggal_hafalan) - strtotime($hafalanSorted->first()->tanggal_hafalan)) / (24 * 60 * 60));
+                    $totalDays = $hafalanSorted->count() > 1 && $hafalanSorted->last() && $hafalanSorted->first() ? max(1, (strtotime($hafalanSorted->last()->tanggal_hafalan) - strtotime($hafalanSorted->first()->tanggal_hafalan)) / (24 * 60 * 60)) : 1;
                     $frequency = $totalDays > 0 ? round($totalDays / $hafalanGroup->count(), 1) : 0;
                     $progress = $hafalanGroup->count() >= 10 ? 'Sangat Baik' : ($hafalanGroup->count() >= 5 ? 'Baik' : ($hafalanGroup->count() >= 3 ? 'Cukup' : 'Perlu Ditingkatkan'));
                 @endphp

@@ -298,7 +298,7 @@
         <div class="header">
             <div class="kop">
                 <h3>LAPORAN HAFAALAN TAHFIZ</h3>
-                <h4>SDIT LA TAHZAN GUNUNG TOAR</h4>
+                <h4>PONDOK PESANTREN MARKAZUL QUR'AN WASSUNAH</h4>
             </div>
         </div>
         
